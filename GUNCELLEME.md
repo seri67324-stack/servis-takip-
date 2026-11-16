@@ -1,4 +1,5 @@
-# v7 - Her hesap kendi alanında
-1. Supabase > SQL Editor: guncelleme4.sql içeriğini çalıştırın (bir kez).
-2. GitHub ana dizinine yükleyin: admin.js, takip.js, diller.js
-3. Her hesap kendi e-posta/şifresiyle girer, sadece kendi kayıtlarını ve kendi servis bilgilerini görür.
+# v9 Otomatik günlük yedek
+1. Supabase > Database > Extensions: "pg_cron" arayıp AÇIN.
+2. GitHub ana dizinine yükleyin: admin.html, admin.js, diller.js
+3. Supabase > SQL Editor: guncelleme6.sql içeriğini çalıştırın.
+4. Panelde "Otomatik Yedekler" bölümünde bugünün yedeği görünür. Her gece 03:00'te yenilenir, 30 gün saklanır.

@@ -185,4 +185,13 @@ $('y_dosya').onchange = async e=>{ const f=e.target.files[0]; e.target.value='';
     for(let i=0;i<rows.length;i+=50){ const {error} = await sb.from('servis_kayitlari').upsert(rows.slice(i,i+50),{onConflict:'id'}); if(error) throw error; }
     alert(t('yedekOk')(rows.length)); yukle();
   }catch(err){ alert(t('hata')+err.message); } };
+async function otoYukle(){
+  const el = $('otoListe'), {data,error} = await sb.rpc('yedek_tarihleri');
+  if(error || !data || !data.length){ el.innerHTML = `<p class="text-sm text-slate-400">${t('otoYok')}</p>`; return; }
+  el.innerHTML = data.map(d=>`<div class="flex items-center justify-between gap-2 py-2 border-b border-white/10 text-sm"><span>${new Date(d.tarih+'T12:00:00').toLocaleDateString(L==='ar'?'ar-u-nu-latn':'tr-TR')} · ${d.adet} ${t('kayitS')}</span><button class="btn ghost oto-geri" data-t="${d.tarih}">${t('otoGeri')}</button></div>`).join('');
+}
+$('otoDet').addEventListener('toggle',()=>{ if($('otoDet').open) otoYukle(); });
+$('otoListe').onclick = async e=>{ const b=e.target.closest('.oto-geri'); if(!b || !confirm(t('otoOnay'))) return;
+  const {data,error} = await sb.rpc('yedekten_geri_yukle',{tarih:b.dataset.t}); if(error) return alert(t('hata')+error.message);
+  alert(t('otoOk')(data)); yukle(); };
 uygula(); oturumKontrol();
