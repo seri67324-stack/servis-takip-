@@ -1,14 +1,14 @@
 <!DOCTYPE html>
 <html lang="tr"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#050816">
+<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#060914">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link rel="stylesheet" href="stil.css">
 </head>
 <body class="min-h-screen">
 <div id="giris" class="max-w-sm mx-auto p-6 mt-20 up">
-  <div class="text-center text-5xl">🔧</div><h1 class="text-2xl font-extrabold text-center mb-6 gt">Yönetim Girişi</h1>
+  <div class="ibox grad w-16 h-16 mx-auto text-3xl" id="glogo"></div><h1 class="text-2xl font-extrabold text-center my-5 gt">Yönetim Girişi</h1>
   <form id="girisForm" class="glass p-5 space-y-3">
     <input id="email" type="email" placeholder="E-posta" class="inp" required>
     <input id="sifre" type="password" placeholder="Şifre" class="inp" required>
@@ -17,25 +17,37 @@
   </form>
 </div>
 <div id="panel" class="hidden max-w-4xl mx-auto p-4 pb-12">
-  <div class="flex justify-between items-center mb-4"><h1 class="text-2xl font-extrabold gt">🔧 Servis Paneli</h1><button id="cikis" class="chip">Çıkış</button></div>
+  <div class="flex justify-between items-center mb-4"><div class="flex items-center gap-3"><div class="ibox grad w-10 h-10 text-lg" id="plogo"></div><h1 class="text-xl font-extrabold gt">Servis Paneli</h1></div><button id="cikis" class="chip">Çıkış</button></div>
   <div id="kartlar" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"></div>
   <div class="grid md:grid-cols-2 gap-3 mb-4">
-    <div class="glass p-4"><div class="font-semibold mb-3">📊 Durum Dağılımı</div><div id="donut"></div></div>
-    <div class="glass p-4"><div class="font-semibold mb-3">💰 Aylık Ciro (son 6 ay)</div><div id="aylik"></div></div>
+    <div class="glass p-5"><div class="font-semibold mb-4">Durum Dağılımı</div><div id="donut"></div></div>
+    <div class="glass p-5"><div class="font-semibold mb-1">Aylık Ciro</div><div class="text-xs text-slate-400 mb-2">Son 6 ay</div><div id="aylik"></div></div>
   </div>
-  <details class="glass p-4 mb-4" open>
-    <summary class="font-semibold cursor-pointer">➕ Yeni Cihaz Kaydı</summary>
-    <form id="yeniForm" class="mt-3 grid gap-3 sm:grid-cols-2">
+  <details class="glass p-5 mb-4">
+    <summary class="font-semibold cursor-pointer">Servis Bilgilerim <span class="text-xs text-slate-400 font-normal">(müşteri sayfasında görünür)</span></summary>
+    <form id="ayarForm" class="mt-4 grid gap-3 sm:grid-cols-2">
+      <input id="s_adi" placeholder="Servis adı" class="inp">
+      <input id="s_tel" type="tel" placeholder="Telefon (05xx...)" class="inp">
+      <input id="s_adres" placeholder="Açık adres" class="inp sm:col-span-2">
+      <input id="s_saat" placeholder="Çalışma saatleri (Hafta içi 09:00 - 19:00)" class="inp sm:col-span-2">
+      <input id="s_harita" placeholder="Google Haritalar konum linki" class="inp sm:col-span-2">
+      <button type="button" id="s_konum" class="btn ghost sm:col-span-2"></button>
+      <button id="s_btn" class="btn grad-g sm:col-span-2 py-3"></button>
+    </form>
+  </details>
+  <details class="glass p-5 mb-4" open>
+    <summary class="font-semibold cursor-pointer">Yeni Cihaz Kaydı</summary>
+    <form id="yeniForm" class="mt-4 grid gap-3 sm:grid-cols-2">
       <input id="n_ad" placeholder="Müşteri adı" class="inp" required>
       <input id="n_tel" type="tel" placeholder="Telefon (05xx...)" class="inp" required>
       <input id="n_model" placeholder="Cihaz modeli" class="inp" required>
       <input id="n_ucret" type="number" step="0.01" placeholder="Ücret (₺)" class="inp">
       <textarea id="n_ariza" placeholder="Arıza açıklaması" class="inp sm:col-span-2" rows="2"></textarea>
-      <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-1">Tamir öncesi fotoğraflar</div><div id="n_pk"></div></div>
-      <button id="n_btn" class="btn grad-g sm:col-span-2 py-3">Kaydet</button>
+      <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2">Tamir öncesi fotoğraflar</div><div id="n_pk"></div></div>
+      <button id="n_btn" class="btn grad-g sm:col-span-2 py-3"></button>
     </form>
   </details>
-  <input id="ara" placeholder="🔍 Ara: ad, telefon, model, kod..." class="inp mb-3">
+  <div class="relative mb-3"><input id="ara" placeholder="Ara: ad, telefon, model, kod..." class="inp"></div>
   <div class="flex gap-2 overflow-x-auto pb-2 mb-2" id="chips"></div>
   <select id="sira" class="inp mb-3"><option value="yeni">En yeni önce</option><option value="eski">En eski önce</option><option value="ucret">Ücret (yüksek → düşük)</option></select>
   <div id="liste" class="space-y-3"></div>

@@ -1,5 +1,5 @@
-# v2 Güncelleme Adımları
-1. **Supabase → SQL Editor:** `guncelleme.sql` içeriğini yapıştırıp Run (verileriniz silinmez).
-2. `ayarlar.js` dosyasında telefon, adres, çalışma saatini düzenleyin.
-3. **GitHub deponuzda:** Add file → Upload files → bu zip'teki dosyaları yükleyin (aynı isimlilerin üzerine yazılır). `config.js` ve `manifest.json` bu ppakette YOK; mevcut halleri kalsın.
-4. 1-2 dk sonra siteyi yenileyin (telefonda eski görünürse sekmeyi kapatıp açın).
+# v3 Güncelleme
+1. Supabase > SQL Editor: `guncelleme2.sql` içeriğini çalıştırın.
+2. GitHub'a bu zip'teki dosyaları yükleyin (config.js ve manifest.json yok, mevcutlar kalsın).
+3. admin.html > "Servis Bilgilerim": telefon, adres, saat ve konumu girip kaydedin.
+   Konum için: Google Haritalar'da yerinizi açıp Paylaş > Bağlantıyı kopyala, ya da "Şu anki konumumu kullan" butonuna basın (dükkândayken).
