@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="tr"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#0f172a">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<style>.inp{width:100%;background:#1e293b;border-radius:.75rem;padding:.65rem .8rem;outline:none}.inp:focus{box-shadow:0 0 0 2px #6366f1}</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen">
+<div id="giris" class="max-w-sm mx-auto p-6 mt-20">
+  <h1 class="text-2xl font-bold text-center mb-6">🔧 Yönetim Girişi</h1>
+  <form id="girisForm" class="space-y-3">
+    <input id="email" type="email" placeholder="E-posta" class="inp" required>
+    <input id="sifre" type="password" placeholder="Şifre" class="inp" required>
+    <button class="w-full bg-indigo-600 rounded-xl py-3 font-semibold">Giriş Yap</button>
+    <p id="girisHata" class="text-rose-400 text-sm text-center"></p>
+  </form>
+</div>
+<div id="panel" class="hidden max-w-3xl mx-auto p-4">
+  <div class="flex justify-between items-center mb-4"><h1 class="text-xl font-bold">🔧 Servis Paneli</h1><button id="cikis" class="text-sm text-slate-400">Çıkış</button></div>
+  <details class="bg-slate-900 border border-slate-800 rounded-2xl p-4 mb-4" open>
+    <summary class="font-semibold cursor-pointer">➕ Yeni Cihaz Kaydı</summary>
+    <form id="yeniForm" class="mt-3 grid gap-3 sm:grid-cols-2">
+      <input id="n_ad" placeholder="Müşteri adı" class="inp" required>
+      <input id="n_tel" type="tel" placeholder="Telefon (05xx...)" class="inp" required>
+      <input id="n_model" placeholder="Cihaz modeli" class="inp" required>
+      <input id="n_ucret" type="number" step="0.01" placeholder="Ücret (₺)" class="inp">
+      <textarea id="n_ariza" placeholder="Arıza açıklaması" class="inp sm:col-span-2" rows="2"></textarea>
+      <label class="sm:col-span-2 text-sm text-slate-400">Tamir öncesi fotoğraf
+        <input id="n_foto" type="file" accept="image/*" capture="environment" class="block mt-1 text-slate-300"></label>
+      <button id="n_btn" class="sm:col-span-2 bg-emerald-600 rounded-xl py-3 font-semibold">Kaydet</button>
+    </form>
+  </details>
+  <input id="ara" placeholder="🔍 Ara: ad, telefon, model, kod..." class="inp mb-4">
+  <div id="liste" class="space-y-3"></div>
+</div>
+<script src="config.js"></script><script src="admin.js"></script>
+</body></html>
