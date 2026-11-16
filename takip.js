@@ -8,7 +8,7 @@ const AR = { sub:'تابع حالة جهازك لحظة بلحظة', ph:'رمز 
   before:'قبل الإصلاح', after:'بعد الإصلاح', now:'المرحلة الحالية', call:'اتصال', wa:'واتساب', route:'الاتجاهات', live:'تحديث تلقائي', title:'تتبع الجهاز',
   d:['تم الاستلام','قيد الفحص','بانتظار قطعة الغيار','قيد الإصلاح','اكتمل / جاهز','تم التسليم'], loc:'ar-u-nu-latn' };
 const TT = {tr:TR, ar:AR};
-let L = 'tr'; try{ L = localStorage.getItem('dil')==='ar' ? 'ar' : 'tr'; }catch(e){}
+let L = 'tr'; try{ const sd = localStorage.getItem('dil'); L = sd ? (sd==='ar'?'ar':'tr') : ((navigator.language||'').toLowerCase().startsWith('ar')?'ar':'tr'); const pd = new URLSearchParams(location.search).get('dil'); if(pd==='ar'||pd==='tr'){ L=pd; localStorage.setItem('dil',pd); } }catch(e){}
 const t = k => TT[L][k];
 const para = n => L==='ar' ? Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺' : tl(n);
 let galeri = [], gi = 0, son = null, sonJs = '', aktif = '', hataK = '';
@@ -47,6 +47,7 @@ async function sorgula(kod, sessiz){
   const js = JSON.stringify(data[0]); if(sessiz && js===sonJs) return;
   sonJs = js; son = data[0]; goster(son);
 }
+const arizaHtml = k => { const c = (k.ariza_kodlari||[]).map(x=>ARIZALAR.find(a=>a.k===x)).filter(Boolean).map(a=>`<span class="chip">${a[L]}</span>`).join(' '); const n = esc(k.ariza_aciklamasi); return ((c?`<div class="flex flex-wrap gap-1.5">${c}</div>`:'')+(n?`<div class="${c?'mt-1.5 text-slate-300':''}">${n}</div>`:'')) || '-'; };
 function goster(k){
   const i = DURUMLAR.indexOf(k.durum), renk = D_RENK[i], N = DURUMLAR.length, p = (i+1)/N*100, hazir = i===4, dn = t('d');
   const halka = `<div class="relative w-28 h-28 shrink-0"><svg viewBox="0 0 100 100" class="w-28 h-28 -rotate-90"><circle cx="50" cy="50" r="42" stroke="rgba(255,255,255,.1)" stroke-width="9" fill="none"/><circle class="ringa" cx="50" cy="50" r="42" stroke="${renk}" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="${2.64*p} 264" style="filter:drop-shadow(0 0 7px ${renk})"/></svg><div class="absolute inset-0 grid place-items-center text-3xl" style="color:${renk}">${ic(D_IKON[i])}</div></div>`;
@@ -60,12 +61,12 @@ function goster(k){
   $('sonuc').innerHTML = `
   ${hazir?`<div class="glass p-4 flex items-center gap-3 pulse" style="border-color:#34d399"><span class="ibox w-11 h-11 text-xl" style="background:#34d39922;color:#34d399">${ic('check')}</span><div><div class="font-bold text-emerald-300">${t('hazirT')}</div><div class="text-sm text-slate-300">${t('hazirD')}</div></div></div>`:''}
   <div class="glass p-5">
-    <div class="flex items-center gap-4">${halka}<div class="min-w-0"><div class="text-xs text-slate-400"><span class="font-mono" dir="ltr">${esc(k.takip_kodu)}</span> · ${tarih}</div><h2 class="text-xl font-bold truncate">${esc(k.cihaz_modeli)}</h2><div class="inline-block mt-1.5 text-sm font-semibold px-3 py-1 rounded-full" style="background:${renk}22;color:${renk}">${dn[i]}</div><div class="text-xs text-slate-400 mt-1.5">${t('step')} ${i+1} / ${N}</div></div></div>
+    <div class="flex items-center gap-4">${halka}<div class="min-w-0"><div class="text-xs text-slate-400"><span class="font-mono" dir="ltr">${esc(k.takip_kodu)}</span> · <span dir="ltr">${tarih}</span></div><h2 class="text-xl font-bold truncate">${esc(k.cihaz_modeli)}</h2><div class="inline-block mt-1.5 text-sm font-semibold px-3 py-1 rounded-full" style="background:${renk}22;color:${renk}">${dn[i]}</div><div class="text-xs text-slate-400 mt-1.5">${t('step')} <span dir="ltr">${i+1} / ${N}</span></div></div></div>
     <ul class="mt-5 border-t border-white/10 pt-5">${adimlar}</ul>
     <div class="flex items-center gap-2 text-xs text-slate-500 mt-1"><span class="w-2 h-2 rounded-full bg-emerald-400 pulse"></span>${t('live')}</div>
   </div>
   <div class="glass p-5 space-y-4 text-sm">
-    ${satir(t('cust'),esc(k.musteri_adi))}${satir(t('fault'),esc(k.ariza_aciklamasi)||'-')}${satir(t('work'),esc(k.yapilan_islem)||'<span class="text-slate-500">'+t('none')+'</span>')}
+    ${satir(t('cust'),esc(k.musteri_adi))}${satir(t('fault'),arizaHtml(k))}${satir(t('work'),esc(k.yapilan_islem)||'<span class="text-slate-500">'+t('none')+'</span>')}
     <div class="flex justify-between items-center border-t border-white/10 pt-4"><span class="flex items-center gap-2 text-slate-400">${ic('wallet')} ${t('price')}</span><span class="text-2xl font-extrabold gt" dir="ltr">${para(k.ucret)}</span></div>
   </div>
   ${fotolar?`<div class="glass p-5 space-y-4">${fotolar}</div>`:''}`;
