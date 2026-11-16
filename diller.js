@@ -21,3 +21,18 @@ ar:{giris:'تسجيل دخول الإدارة',email:'البريد الإلكت�
  ara:'بحث: الاسم، الهاتف، الطراز، الرمز...',tumu:'الكل',bekF:'بانتظار التسليم',sYeni:'الأحدث أولاً',sEski:'الأقدم أولاً',sUcret:'التكلفة (الأعلى أولاً)',yok:'لا توجد سجلات.',islem:'الإجراء المنفذ',oncesi:'قبل',sonrasi:'بعد',
  guncelle:'تحديث',wa:'واتساب',hat:'تذكير',sosyal:'صورة للسوشيال ميديا',silOnay:'هل تريد حذف هذا السجل؟',kamera:'كاميرا',galeri:'المعرض',hazirUy:n=>`جاهز منذ ${n} يوم ولم يُستلم`,hata:'خطأ: ',konumHata:'تعذر تحديد الموقع.'}
 };
+
+// ---- Çoklu kullanıcı (her hesap kendi alanında) ----
+async function ayarYukle(){
+  try{ const {data} = await sb.from('ayarlar').select('*').maybeSingle();
+    if(data) for(const k in data) if(data[k] && k!=='sahip_id' && k!=='id') AYAR[k]=data[k]; }catch(e){}
+  return AYAR;
+}
+async function fotoYukle(file, kod, tip){
+  const {data:{user}} = await sb.auth.getUser();
+  const blob = await sikistir(file);
+  const yol = `${user.id}/${kod}/${tip}_${Date.now()}.jpg`;
+  const {error} = await sb.storage.from('cihaz-fotolari').upload(yol, blob, {contentType:'image/jpeg'});
+  if(error) throw error;
+  return sb.storage.from('cihaz-fotolari').getPublicUrl(yol).data.publicUrl;
+}

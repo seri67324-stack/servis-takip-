@@ -34,6 +34,7 @@ function uygula(){
 }
 document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ L=b.dataset.l; try{localStorage.setItem('dil',L)}catch(e){} uygula(); });
 
+function ayarUygula(k){ AYAR.servis_adi=k.servis_adi||'Teknik Servis'; AYAR.tel=k.servis_tel||''; AYAR.adres=k.servis_adres||''; AYAR.saat=k.servis_saat||''; AYAR.harita=k.servis_harita||''; iletisim(); }
 async function sorgula(kod, sessiz){
   kod = kod.trim().toUpperCase(); if(!kod) return;
   const {data,error} = await sb.rpc('takip_sorgula',{kod});
@@ -45,7 +46,7 @@ async function sorgula(kod, sessiz){
   aktif = kod; hataK=''; $('hata').classList.add('hidden');
   try{ localStorage.setItem('sonKod',kod); history.replaceState(null,'','?kod='+encodeURIComponent(kod)); }catch(e){}
   const js = JSON.stringify(data[0]); if(sessiz && js===sonJs) return;
-  sonJs = js; son = data[0]; goster(son);
+  sonJs = js; son = data[0]; ayarUygula(son); goster(son);
 }
 const arizaHtml = k => { const c = (k.ariza_kodlari||[]).map(x=>ARIZALAR.find(a=>a.k===x)).filter(Boolean).map(a=>`<span class="chip">${a[L]}</span>`).join(' '); const n = esc(k.ariza_aciklamasi); return ((c?`<div class="flex flex-wrap gap-1.5">${c}</div>`:'')+(n?`<div class="${c?'mt-1.5 text-slate-300':''}">${n}</div>`:'')) || '-'; };
 function goster(k){

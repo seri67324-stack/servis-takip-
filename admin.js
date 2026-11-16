@@ -41,8 +41,8 @@ $('girisForm').onsubmit = async e=>{ e.preventDefault();
 $('cikis').onclick = async()=>{ await sb.auth.signOut(); oturumKontrol(); };
 $('s_konum').onclick = ()=> navigator.geolocation.getCurrentPosition(p=>{ $('s_harita').value=`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`; }, ()=>alert(t('konumHata')));
 $('ayarForm').onsubmit = async e=>{ e.preventDefault();
-  const row = {id:1, servis_adi:$('s_adi').value.trim(), tel:$('s_tel').value.trim(), adres:$('s_adres').value.trim(), saat:$('s_saat').value.trim(), harita:$('s_harita').value.trim()};
-  const {error} = await sb.from('ayarlar').upsert(row); if(error) return alert(t('hata')+error.message);
+  const {data:{user}} = await sb.auth.getUser(); const row = {sahip_id:user.id, servis_adi:$('s_adi').value.trim(), tel:$('s_tel').value.trim(), adres:$('s_adres').value.trim(), saat:$('s_saat').value.trim(), harita:$('s_harita').value.trim()};
+  const {error} = await sb.from('ayarlar').upsert(row,{onConflict:'sahip_id'}); if(error) return alert(t('hata')+error.message);
   Object.assign(AYAR,row); alert(t('sOk')); };
 
 async function yukle(){

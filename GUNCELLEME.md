@@ -1,3 +1,4 @@
-# v5
-1. Supabase > SQL Editor: `guncelleme3.sql` dosyasının içeriğini çalıştırın.
-2. GitHub ana dizinine zip'teki 6 dosyayı yükleyin: index.html, takip.js, admin.html, admin.js, diller.js, (guncelleme3.sql isteğe bağlı).
+# v7 - Her hesap kendi alanında
+1. Supabase > SQL Editor: guncelleme4.sql içeriğini çalıştırın (bir kez).
+2. GitHub ana dizinine yükleyin: admin.js, takip.js, diller.js
+3. Her hesap kendi e-posta/şifresiyle girer, sadece kendi kayıtlarını ve kendi servis bilgilerini görür.
