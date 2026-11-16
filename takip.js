@@ -7,11 +7,13 @@ const AR = { sub:'تابع حالة جهازك لحظة بلحظة', ph:'رمز 
   hazirT:'جهازك جاهز', hazirD:'يمكنك استلامه في أي وقت.', step:'المرحلة', cust:'العميل', fault:'العطل', work:'الإجراء المنفذ', none:'لم يتم إدخاله بعد', price:'التكلفة',
   before:'قبل الإصلاح', after:'بعد الإصلاح', now:'المرحلة الحالية', call:'اتصال', wa:'واتساب', route:'الاتجاهات', live:'تحديث تلقائي', title:'تتبع الجهاز',
   d:['تم الاستلام','قيد الفحص','بانتظار قطعة الغيار','قيد الإصلاح','اكتمل / جاهز','تم التسليم'], loc:'ar-u-nu-latn' };
+TR.ph2='Telefonunuzun son 4 hanesi'; TR.anahtarIste='Güvenlik için kodu ve telefonunuzun son 4 hanesini girin.'; TR.nf='Kayıt bulunamadı. Kod ve telefon hanelerini kontrol edin.';
+AR.ph2='آخر 4 أرقام من هاتفك'; AR.anahtarIste='للأمان، أدخل الرمز وآخر 4 أرقام من هاتفك.'; AR.nf='لم يتم العثور على سجل. تحقق من الرمز وأرقام الهاتف.';
 const TT = {tr:TR, ar:AR};
 let L = 'tr'; try{ const sd = localStorage.getItem('dil'); L = sd ? (sd==='ar'?'ar':'tr') : ((navigator.language||'').toLowerCase().startsWith('ar')?'ar':'tr'); const pd = new URLSearchParams(location.search).get('dil'); if(pd==='ar'||pd==='tr'){ L=pd; localStorage.setItem('dil',pd); } }catch(e){}
 const t = k => TT[L][k];
 const para = n => L==='ar' ? Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺' : tl(n);
-let galeri = [], gi = 0, son = null, sonJs = '', aktif = '', hataK = '';
+let galeri = [], gi = 0, son = null, sonJs = '', aktif = '', aktifAnahtar = '', hataK = '';
 $('logo').innerHTML = ic('wrench','text-white');
 
 function iletisim(){
@@ -28,23 +30,24 @@ function iletisim(){
 }
 function uygula(){
   document.documentElement.lang = L; document.documentElement.dir = L==='ar'?'rtl':'ltr';
-  $('altbaslik').textContent = t('sub'); $('kod').placeholder = t('ph'); $('sbtn').innerHTML = ic('search')+' '+t('btn');
+  $('altbaslik').textContent = t('sub'); $('kod').placeholder = t('ph'); $('anahtar').placeholder = t('ph2'); $('sbtn').innerHTML = ic('search')+' '+t('btn');
   document.querySelectorAll('[data-l]').forEach(b=>b.classList.toggle('on', b.dataset.l===L));
   iletisim(); if(son) goster(son); if(hataK) $('hata').textContent = t(hataK);
 }
 document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{ L=b.dataset.l; try{localStorage.setItem('dil',L)}catch(e){} uygula(); });
 
 function ayarUygula(k){ AYAR.servis_adi=k.servis_adi||'Teknik Servis'; AYAR.tel=k.servis_tel||''; AYAR.adres=k.servis_adres||''; AYAR.saat=k.servis_saat||''; AYAR.harita=k.servis_harita||''; iletisim(); }
-async function sorgula(kod, sessiz){
-  kod = kod.trim().toUpperCase(); if(!kod) return;
-  const {data,error} = await sb.rpc('takip_sorgula',{kod});
+async function sorgula(kod, sessiz, anahtar){
+  kod = kod.trim().toUpperCase(); anahtar = String(anahtar!==undefined && anahtar!==null ? anahtar : $('anahtar').value).trim().toLowerCase(); if(!kod) return;
+  if(!anahtar){ if(sessiz) return; hataK='anahtarIste'; $('hata').textContent=t(hataK); $('hata').classList.remove('hidden'); return; }
+  const {data,error} = await sb.rpc('takip_sorgula',{kod, anahtar});
   if(error || !data || !data.length){
     if(sessiz) return;
     if(!error){ try{localStorage.removeItem('sonKod')}catch(e){} aktif=''; }
     son=null; sonJs=''; $('sonuc').classList.add('hidden'); hataK = error?'conn':'nf'; $('hata').textContent = t(hataK); $('hata').classList.remove('hidden'); return;
   }
-  aktif = kod; hataK=''; $('hata').classList.add('hidden');
-  try{ localStorage.setItem('sonKod',kod); history.replaceState(null,'','?kod='+encodeURIComponent(kod)); }catch(e){}
+  aktif = kod; aktifAnahtar = anahtar; hataK=''; $('hata').classList.add('hidden');
+  try{ localStorage.setItem('sonKod',kod); localStorage.setItem('sonAnahtar',anahtar); history.replaceState(null,'','?kod='+encodeURIComponent(kod)+'&k='+encodeURIComponent(anahtar)); }catch(e){}
   const js = JSON.stringify(data[0]); if(sessiz && js===sonJs) return;
   sonJs = js; son = data[0]; ayarUygula(son); goster(son);
 }
@@ -79,9 +82,10 @@ $('lbp').onclick=e=>{e.stopPropagation();lb(gi-1)}; $('lbn').onclick=e=>{e.stopP
 $('sorgu').onsubmit = e=>{e.preventDefault(); sorgula($('kod').value)};
 
 // Otomatik yenileme: sayfayı yenilemeden durum değişince ekran güncellenir
-setInterval(()=>{ if(aktif && !document.hidden) sorgula(aktif,true); }, 10000);
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden && aktif) sorgula(aktif,true); });
+setInterval(()=>{ if(aktif && !document.hidden) sorgula(aktif,true,aktifAnahtar); }, 10000);
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden && aktif) sorgula(aktif,true,aktifAnahtar); });
 
 uygula(); ayarYukle().then(iletisim);
-let ilk = new URLSearchParams(location.search).get('kod'); if(!ilk){ try{ ilk = localStorage.getItem('sonKod'); }catch(e){} }
-if(ilk){ $('kod').value = ilk.toUpperCase(); sorgula(ilk); }
+const qp = new URLSearchParams(location.search); let ilk = qp.get('kod'), ik = qp.get('k');
+if(!ilk){ try{ ilk = localStorage.getItem('sonKod'); ik = localStorage.getItem('sonAnahtar'); }catch(e){} }
+if(ilk){ $('kod').value = ilk.toUpperCase(); if(ik) sorgula(ilk,false,ik); else { hataK='anahtarIste'; $('hata').textContent=t(hataK); $('hata').classList.remove('hidden'); } }

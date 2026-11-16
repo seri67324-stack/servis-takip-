@@ -36,3 +36,9 @@ async function fotoYukle(file, kod, tip){
   if(error) throw error;
   return sb.storage.from('cihaz-fotolari').getPublicUrl(yol).data.publicUrl;
 }
+
+const kodUret5 = () => 'SRV-' + String(Math.floor(10000 + Math.random()*90000));
+Object.assign(ADM.tr,{cop:'Silinenler',geriAl:'Geri al',kalici:'Kalıcı sil',kaliciOnay:'Bu kayıt KALICI olarak silinsin mi? Geri alınamaz.',silOnay:'Kayıt "Silinenler" bölümüne taşınsın mı? (Geri alınabilir)',
+ yedek:'Yedek',yJson:'Yedek indir (JSON)',yCsv:'Excel (CSV)',yGeri:'Yedekten yükle',yedekUy:'Son yedeğiniz 7 günden eski. Lütfen "Yedek indir (JSON)" ile yedek alın.',yedekOk:n=>`${n} kayıt yüklendi.`,yedekOnay:'Yedekteki kayıtlar bu hesaba yüklenecek. Devam edilsin mi?'});
+Object.assign(ADM.ar,{cop:'المحذوفات',geriAl:'استرجاع',kalici:'حذف نهائي',kaliciOnay:'هل تريد حذف هذا السجل نهائياً؟ لا يمكن التراجع.',silOnay:'هل تريد نقل السجل إلى المحذوفات؟ (يمكن استرجاعه)',
+ yedek:'نسخة احتياطية',yJson:'تنزيل نسخة (JSON)',yCsv:'إكسل (CSV)',yGeri:'استعادة من نسخة',yedekUy:'آخر نسخة احتياطية أقدم من 7 أيام. يرجى تنزيل نسخة جديدة.',yedekOk:n=>`تم تحميل ${n} سجل.`,yedekOnay:'سيتم تحميل سجلات النسخة إلى هذا الحساب. هل تريد المتابعة؟'});

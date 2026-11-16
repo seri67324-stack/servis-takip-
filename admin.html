@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="tr"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest-admin.json"><link rel="apple-touch-icon" href="icon-192.png"><meta name="theme-color" content="#060914">
+<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#060914">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -47,6 +47,8 @@
       <button id="n_btn" class="btn grad-g sm:col-span-2 py-3"></button>
     </form>
   </details>
+  <div id="yedekUy" class="hidden mb-3 text-sm rounded-xl px-4 py-3 bg-amber-500/15 text-amber-300"></div>
+  <div class="glass p-4 mb-4 flex flex-wrap gap-2 items-center"><span class="font-semibold flex-1" data-i="yedek"></span><button id="y_json" class="btn ghost" data-i="yJson"></button><button id="y_csv" class="btn ghost" data-i="yCsv"></button><button id="y_geri" class="btn ghost" data-i="yGeri"></button><input type="file" id="y_dosya" accept=".json,application/json" class="hidden"></div>
   <input id="ara" data-p="ara" class="inp mb-3">
   <div class="flex gap-2 overflow-x-auto pb-2 mb-2" id="chips"></div>
   <select id="sira" class="inp mb-3"></select>

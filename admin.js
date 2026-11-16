@@ -2,7 +2,7 @@ const $ = id => document.getElementById(id);
 let L = 'tr'; try{ const s = localStorage.getItem('adminDil'); L = s ? (s==='ar'?'ar':'tr') : ((navigator.language||'').toLowerCase().startsWith('ar')?'ar':'tr'); }catch(e){}
 const t = k => ADM[L][k], dn = () => L==='ar' ? D_AR : DURUMLAR;
 const para = n => L==='ar' ? Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺' : tl(n);
-let kayitlar = [], filtre = 'hepsi'; const bek = {};
+let kayitlar = [], silinenler = [], filtre = 'hepsi'; const bek = {};
 $('glogo').innerHTML = $('plogo').innerHTML = ic('wrench');
 const liste = (k,x)=>{ const a = x==='once'?k.fotolar_once:k.fotolar_sonra, u = x==='once'?k.onceki_foto_url:k.sonraki_foto_url; return a&&a.length ? a : (u?[u]:[]); };
 const gun = d => Math.floor((Date.now()-new Date(d))/864e5);
@@ -48,7 +48,7 @@ $('ayarForm').onsubmit = async e=>{ e.preventDefault();
 async function yukle(){
   const {data,error} = await sb.from('servis_kayitlari').select('*').order('olusturma_tarihi',{ascending:false});
   if(error) return alert(t('hata')+error.message);
-  kayitlar = data; istatistik(); ciz();
+  silinenler = data.filter(k=>k.silindi); kayitlar = data.filter(k=>!k.silindi); istatistik(); ciz(); yedekKontrol();
 }
 function istatistik(){
   const aktif = kayitlar.filter(k=>k.durum!=='Teslim Edildi').length, bk = kayitlar.filter(bekliyor).length;
@@ -68,7 +68,7 @@ function istatistik(){
   ${[0,1,2].map(n=>`<line x1="${P}" x2="${W-P}" y1="${H-24-n*(H-56)/2}" y2="${H-24-n*(H-56)/2}" stroke="rgba(255,255,255,.07)"/>`).join('')}
   <path d="M${ln} L${pts[5][0]},${H-24} L${pts[0][0]},${H-24}Z" fill="url(#ag)"/><path class="draw" d="M${ln}" fill="none" stroke="url(#lg)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
   ${pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="4" fill="#0a0f24" stroke="#f0abfc" stroke-width="2"/><text x="${p[0]}" y="${p[1]-9}" fill="#cbd5e1" font-size="9" text-anchor="middle">${aylar[i][1]?Math.round(aylar[i][1]):''}</text><text x="${p[0]}" y="${H-8}" fill="#94a3b8" font-size="10" text-anchor="middle">${aylar[i][0]}</text>`).join('')}</svg>`;
-  const f = [['hepsi',t('tumu')],['bekleyen',t('bekF')],...DURUMLAR.map((d,i)=>[d,D[i]])];
+  const f = [['hepsi',t('tumu')],['bekleyen',t('bekF')],...DURUMLAR.map((d,i)=>[d,D[i]]),['cop',t('cop')+' ('+silinenler.length+')']];
   $('chips').innerHTML = f.map(([v,tt])=>`<button class="chip ${filtre===v?'on':''}" data-f="${v}">${tt}</button>`).join('');
 }
 $('chips').onclick = e=>{ const b=e.target.closest('[data-f]'); if(!b) return; filtre=b.dataset.f; istatistik(); ciz(); };
@@ -76,10 +76,10 @@ $('ara').oninput = ciz; $('sira').onchange = ciz;
 
 function ciz(){
   const q = $('ara').value.toLowerCase(), s = $('sira').value, D = dn();
-  let l = kayitlar.filter(k=>[k.musteri_adi,k.musteri_tel,k.cihaz_modeli,k.takip_kodu].join(' ').toLowerCase().includes(q))
-    .filter(k=> filtre==='hepsi' || (filtre==='bekleyen'?bekliyor(k):k.durum===filtre));
+  let l = (filtre==='cop'?silinenler:kayitlar).filter(k=>[k.musteri_adi,k.musteri_tel,k.cihaz_modeli,k.takip_kodu].join(' ').toLowerCase().includes(q))
+    .filter(k=> filtre==='hepsi' || filtre==='cop' || (filtre==='bekleyen'?bekliyor(k):k.durum===filtre));
   if(s==='eski') l.reverse(); if(s==='ucret') l.sort((a,b)=>(b.ucret||0)-(a.ucret||0));
-  $('liste').innerHTML = l.map(k=>{ const di = DURUMLAR.indexOf(k.durum), r = D_RENK[di];
+  $('liste').innerHTML = l.map(k=>{ if(filtre==='cop') return copKart(k); const di = DURUMLAR.indexOf(k.durum), r = D_RENK[di];
   return `<div class="glass p-4 up" data-id="${k.id}">
     <div class="flex gap-3 items-start"><span class="ibox w-11 h-11 text-xl shrink-0" style="background:${r}22;color:${r}">${ic(D_IKON[di])}</span>
     <div class="flex-1 min-w-0"><div class="flex justify-between gap-2"><b class="text-lg truncate">${esc(k.cihaz_modeli)}</b><span class="text-xs font-mono text-indigo-300 pt-1" dir="ltr">${esc(k.takip_kodu)}</span></div>
@@ -109,7 +109,7 @@ $('yeniForm').onsubmit = async e=>{
   try{
     let kod, hata, satir;
     for(let i=0;i<8;i++){
-      kod = kodUret();
+      kod = kodUret5();
       ({data:satir,error:hata} = await sb.from('servis_kayitlari').insert({takip_kodu:kod,musteri_adi:$('n_ad').value.trim(),musteri_tel:$('n_tel').value.trim(),cihaz_modeli:$('n_model').value.trim(),ariza_aciklamasi:$('n_ariza').value.trim(),ariza_kodlari:secili($('n_az')),ucret:+$('n_ucret').value||0}).select().single());
       if(!hata || hata.code!=='23505') break;
     }
@@ -123,7 +123,7 @@ $('yeniForm').onsubmit = async e=>{
 
 $('liste').onclick = async e=>{
   const kart = e.target.closest('[data-id]'); if(!kart) return;
-  const k = kayitlar.find(x=>x.id===kart.dataset.id), b = e.target.closest('button'); if(!b || b.classList.contains('az') || b.classList.contains('pk-cam') || b.classList.contains('pk-gal')) return;
+  const k = kayitlar.find(x=>x.id===kart.dataset.id) || silinenler.find(x=>x.id===kart.dataset.id), b = e.target.closest('button'); if(!b || b.classList.contains('az') || b.classList.contains('pk-cam') || b.classList.contains('pk-gal')) return;
   if(b.classList.contains('b-kaydet')){
     b.disabled=true;
     try{
@@ -138,7 +138,7 @@ $('liste').onclick = async e=>{
     }catch(err){ alert(t('hata')+err.message); b.disabled=false; }
   }
   if(b.classList.contains('b-wa')||b.classList.contains('b-hat')){
-    const ar = L==='ar', hat = b.classList.contains('b-hat'), link = takipLinki(k.takip_kodu)+'&dil='+L, di = DURUMLAR.indexOf(k.durum), saat = AYAR.saat;
+    const ar = L==='ar', hat = b.classList.contains('b-hat'), link = takipLinki(k.takip_kodu)+'&k='+(k.erisim_anahtari||'')+'&dil='+L, di = DURUMLAR.indexOf(k.durum), saat = AYAR.saat;
     const m = ar
       ? (hat ? `مرحباً ${k.musteri_adi}،\n\nجهازك *${k.cihaz_modeli}* جاهز وبانتظار استلامك.\nالتكلفة: ${para(k.ucret)}\n${saat?'ساعات العمل: '+saat+'\n':''}\nالتفاصيل: ${link}\n\n${AYAR.servis_adi}`
              : `مرحباً ${k.musteri_adi}،\n\nحالة جهازك *${k.cihaz_modeli}*: *${D_AR[di]}*\nالتكلفة: ${para(k.ucret)}\n\nتابع جهازك لحظة بلحظة:\n${link}\n\n${AYAR.servis_adi}`)
@@ -148,9 +148,11 @@ $('liste').onclick = async e=>{
   }
   if(b.classList.contains('b-gorsel')) sosyalGorsel(k);
   if(b.classList.contains('b-sil') && confirm(t('silOnay'))){
-    const {error} = await sb.from('servis_kayitlari').delete().eq('id',k.id);
+    const {error} = await sb.from('servis_kayitlari').update({silindi:true,silinme_tarihi:new Date().toISOString()}).eq('id',k.id);
     if(error) alert(error.message); else yukle();
   }
+  if(b.classList.contains('b-geri')){ const {error} = await sb.from('servis_kayitlari').update({silindi:false,silinme_tarihi:null}).eq('id',k.id); if(error) alert(error.message); else yukle(); }
+  if(b.classList.contains('b-kalici') && confirm(t('kaliciOnay'))){ const {error} = await sb.from('servis_kayitlari').delete().eq('id',k.id); if(error) alert(error.message); else yukle(); }
 };
 
 const resimYukle = u => new Promise((res,rej)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>res(i);i.onerror=()=>rej(new Error('img'));i.src=u+'?t='+Date.now()});
@@ -169,4 +171,18 @@ async function sosyalGorsel(k){
     c.toBlob(bl=>{const l=document.createElement('a');l.href=URL.createObjectURL(bl);l.download=`${k.takip_kodu}-oncesi-sonrasi.jpg`;l.click()},'image/jpeg',.92);
   }catch(err){ alert(t('hata')+err.message); }
 }
+const copKart = k => `<div class="glass p-4 up" data-id="${k.id}"><div class="flex justify-between gap-2"><div><b>${esc(k.cihaz_modeli)}</b><div class="text-sm text-slate-400">${esc(k.musteri_adi)}</div></div><span class="text-xs font-mono text-indigo-300" dir="ltr">${esc(k.takip_kodu)}</span></div><div class="flex gap-2 mt-3"><button class="btn grad-g b-geri">${t('geriAl')}</button><button class="btn ghost b-kalici ms-auto">${ic('trash')} ${t('kalici')}</button></div></div>`;
+function yedekKontrol(){ let s=0; try{ s = +localStorage.getItem('sonYedek')||0; }catch(e){} const el=$('yedekUy'); el.textContent=t('yedekUy'); el.classList.toggle('hidden', !((!s || Date.now()-s>7*864e5) && (kayitlar.length||silinenler.length))); }
+function indir(ad,tur,icerik){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([icerik],{type:tur})); a.download=ad; a.click(); try{ localStorage.setItem('sonYedek',Date.now()); }catch(e){} yedekKontrol(); }
+const bugun = () => new Date().toISOString().slice(0,10);
+$('y_json').onclick = ()=> indir(`yedek-${bugun()}.json`,'application/json',JSON.stringify([...kayitlar,...silinenler],null,1));
+$('y_csv').onclick = ()=>{ const alan=['takip_kodu','olusturma_tarihi','musteri_adi','musteri_tel','cihaz_modeli','ariza_kodlari','ariza_aciklamasi','yapilan_islem','durum','ucret']; const q=v=>`"${String(Array.isArray(v)?v.join(' | '):(v??'')).replace(/"/g,'""')}"`;
+  indir(`kayitlar-${bugun()}.csv`,'text/csv;charset=utf-8','\ufeff'+[alan.join(';'),...kayitlar.map(k=>alan.map(a=>q(k[a])).join(';'))].join('\r\n')); };
+$('y_geri').onclick = ()=> $('y_dosya').click();
+$('y_dosya').onchange = async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f) return;
+  try{ const arr = JSON.parse(await f.text()); if(!Array.isArray(arr)) throw new Error('JSON'); if(!confirm(t('yedekOnay'))) return;
+    const {data:{user}} = await sb.auth.getUser(); const rows = arr.filter(k=>k&&k.id&&k.takip_kodu).map(k=>({...k,sahip_id:user.id}));
+    for(let i=0;i<rows.length;i+=50){ const {error} = await sb.from('servis_kayitlari').upsert(rows.slice(i,i+50),{onConflict:'id'}); if(error) throw error; }
+    alert(t('yedekOk')(rows.length)); yukle();
+  }catch(err){ alert(t('hata')+err.message); } };
 uygula(); oturumKontrol();
