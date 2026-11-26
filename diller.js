@@ -11,13 +11,13 @@ const ADM = {
 tr:{giris:'Yönetim Girişi',email:'E-posta',sifre:'Şifre',girisBtn:'Giriş Yap',girisHata:'Giriş başarısız: e-posta veya şifre hatalı.',panel:'Servis Paneli',cikis:'Çıkış',
  toplam:'Toplam Kayıt',aktif:'Aktif Cihaz',bekleyen:'Teslim Bekleyen',ciro:'Bu Ay Ciro',durumDag:'Durum Dağılımı',aylik:'Aylık Ciro',son6:'Son 6 ay',kayit:'KAYIT',
  sb:'Servis Bilgilerim',sbN:'(müşteri sayfasında görünür)',sAdi:'Servis adı',sTel:'Telefon (05xx...)',sAdres:'Açık adres',sSaat:'Çalışma saatleri',sHarita:'Google Haritalar konum linki',sKonum:'Şu anki konumumu kullan',sKaydet:'Bilgileri Kaydet',sOk:'Servis bilgileri kaydedildi.',
- yeni:'Yeni Cihaz Kaydı',ad:'Müşteri adı',tel:'Telefon (05xx...)',model:'Cihaz modeli',ucret:'Ücret (₺)',arizaSec:'Arıza türü (birden fazla seçebilirsiniz)',not:'Ek not / arıza açıklaması',onceF:'Tamir öncesi fotoğraflar',kaydet:'Kaydet',
+ yeni:'Yeni Cihaz Kaydı',ad:'Müşteri adı',tel:'Telefon (05xx...)',model:'Cihaz modeli',ucret:'Toplam Ücret',arizaSec:'Arıza türü (birden fazla seçebilirsiniz)',not:'Ek not / arıza açıklaması',onceF:'Tamir öncesi fotoğraflar',kaydet:'Kaydet',
  ara:'Ara: ad, telefon, model, kod...',tumu:'Tümü',bekF:'Teslim Bekleyen',sYeni:'En yeni önce',sEski:'En eski önce',sUcret:'Ücret (yüksek → düşük)',yok:'Kayıt yok.',islem:'Yapılan işlem',oncesi:'Öncesi',sonrasi:'Sonrası',
  guncelle:'Güncelle',wa:'WhatsApp',hat:'Hatırlat',sosyal:'Sosyal Medya Görseli',silOnay:'Bu kayıt silinsin mi?',kamera:'Kamera',galeri:'Galeri',hazirUy:n=>`Hazır, ${n} gündür teslim alınmadı`,hata:'Hata: ',konumHata:'Konum alınamadı.'},
 ar:{giris:'تسجيل دخول الإدارة',email:'البريد الإلكتروني',sifre:'كلمة المرور',girisBtn:'دخول',girisHata:'فشل الدخول: البريد أو كلمة المرور غير صحيحة.',panel:'لوحة الصيانة',cikis:'خروج',
  toplam:'إجمالي السجلات',aktif:'أجهزة قيد العمل',bekleyen:'بانتظار التسليم',ciro:'إيرادات هذا الشهر',durumDag:'توزيع الحالات',aylik:'الإيرادات الشهرية',son6:'آخر 6 أشهر',kayit:'سجل',
  sb:'معلومات المركز',sbN:'(تظهر في صفحة العميل)',sAdi:'اسم المركز',sTel:'الهاتف (05xx...)',sAdres:'العنوان',sSaat:'ساعات العمل',sHarita:'رابط الموقع على خرائط جوجل',sKonum:'استخدام موقعي الحالي',sKaydet:'حفظ المعلومات',sOk:'تم حفظ معلومات المركز.',
- yeni:'تسجيل جهاز جديد',ad:'اسم العميل',tel:'الهاتف (05xx...)',model:'طراز الجهاز',ucret:'التكلفة (₺)',arizaSec:'نوع العطل (يمكن اختيار أكثر من واحد)',not:'ملاحظة إضافية / وصف العطل',onceF:'صور قبل الإصلاح',kaydet:'حفظ',
+ yeni:'تسجيل جهاز جديد',ad:'اسم العميل',tel:'الهاتف (05xx...)',model:'طراز الجهاز',ucret:'التكلفة الإجمالية',arizaSec:'نوع العطل (يمكن اختيار أكثر من واحد)',not:'ملاحظة إضافية / وصف العطل',onceF:'صور قبل الإصلاح',kaydet:'حفظ',
  ara:'بحث: الاسم، الهاتف، الطراز، الرمز...',tumu:'الكل',bekF:'بانتظار التسليم',sYeni:'الأحدث أولاً',sEski:'الأقدم أولاً',sUcret:'التكلفة (الأعلى أولاً)',yok:'لا توجد سجلات.',islem:'الإجراء المنفذ',oncesi:'قبل',sonrasi:'بعد',
  guncelle:'تحديث',wa:'واتساب',hat:'تذكير',sosyal:'صورة للسوشيال ميديا',silOnay:'هل تريد حذف هذا السجل؟',kamera:'كاميرا',galeri:'المعرض',hazirUy:n=>`جاهز منذ ${n} يوم ولم يُستلم`,hata:'خطأ: ',konumHata:'تعذر تحديد الموقع.'}
 };
@@ -46,9 +46,9 @@ Object.assign(ADM.tr,{otoYedek:'Otomatik Yedekler (son 30 gün)',otoYok:'Henüz 
 Object.assign(ADM.ar,{otoYedek:'النسخ الاحتياطية التلقائية (آخر 30 يوماً)',otoYok:'لا توجد نسخ تلقائية بعد. أول نسخة تُنشأ الليلة.',kayitS:'سجل',otoGeri:'الرجوع إلى هذا اليوم',otoOnay:'سيتم استرجاع سجلات هذا التاريخ، وستعود التعديلات اللاحقة عليها إلى حالتها السابقة (السجلات المضافة لاحقاً لا تُحذف). هل تريد المتابعة؟',otoOk:n=>`تم استرجاع ${n} سجل.`});
 
 // ---- v10: ödeme takibi, bildirim, alacak ----
-Object.assign(ADM.tr,{ciro:'Bu Ay Tahsilat',aylik:'Aylık Tahsilat',alacak:'Kalan Alacak',buAyKayit:'Bu Ay Kayıt',onOdeme:'Alınan ön ödeme (₺) - varsa',
- odeme:'Ödeme',kalan:'Kalan',odendi:'Ödeme tamamlandı ✓',tutar:'Tutar (₺)',odemeEkle:'Ödeme al',kalaniAl:'Kalanı al',sonOdemeSil:'Son ödemeyi sil',
+Object.assign(ADM.tr,{ciro:'Bu Ay Tahsilat',aylik:'Aylık Tahsilat',alacak:'Kalan Alacak',buAyKayit:'Bu Ay Kayıt',onOdeme:'Alınan ön ödeme (varsa)',
+ odeme:'Ödeme',kalan:'Kalan',odendi:'Ödeme tamamlandı ✓',tutar:'Ödeme tutarı',odemeEkle:'Ödeme al',kalaniAl:'Kalanı al',sonOdemeSil:'Son ödemeyi sil',
  odemeOk:'Ödeme kaydedildi.',durumOk:'Kayıt güncellendi. Müşteriye bildirilsin mi?',yeniOk:'Kayıt oluşturuldu. Takip linkini müşteriye gönderin.'});
-Object.assign(ADM.ar,{ciro:'تحصيل هذا الشهر',aylik:'التحصيل الشهري',alacak:'المبالغ المتبقية',buAyKayit:'سجلات هذا الشهر',onOdeme:'دفعة مقدمة (₺) - إن وجدت',
- odeme:'الدفع',kalan:'المتبقي',odendi:'تم السداد بالكامل ✓',tutar:'المبلغ (₺)',odemeEkle:'تسجيل دفعة',kalaniAl:'تحصيل المتبقي',sonOdemeSil:'حذف آخر دفعة',
+Object.assign(ADM.ar,{ciro:'تحصيل هذا الشهر',aylik:'التحصيل الشهري',alacak:'المبالغ المتبقية',buAyKayit:'سجلات هذا الشهر',onOdeme:'دفعة مقدمة (إن وجدت)',
+ odeme:'الدفع',kalan:'المتبقي',odendi:'تم السداد بالكامل ✓',tutar:'مبلغ الدفعة',odemeEkle:'تسجيل دفعة',kalaniAl:'تحصيل المتبقي',sonOdemeSil:'حذف آخر دفعة',
  odemeOk:'تم تسجيل الدفعة.',durumOk:'تم تحديث السجل. هل تريد إبلاغ العميل؟',yeniOk:'تم إنشاء السجل. أرسل رابط التتبع للعميل.'});

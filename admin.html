@@ -4,12 +4,25 @@
 <title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest-admin.json"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#060914">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="tw.css"><link rel="stylesheet" href="stil.css"><style>[dir=rtl] body{font-family:Tajawal,system-ui,sans-serif}</style>
+<link rel="stylesheet" href="tw.css"><link rel="stylesheet" href="stil.css">
+<style>
+[dir=rtl] body{font-family:Tajawal,system-ui,sans-serif}
+.nav-tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:.4rem;background:rgba(255,255,255,.04);padding:.35rem;border-radius:1rem;border:1px solid rgba(255,255,255,.08)}
+.nav-tab{padding:.65rem .4rem;border-radius:.75rem;font-size:.82rem;font-weight:700;color:#94a3b8;text-align:center;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:.2rem}
+.nav-tab.on{background:linear-gradient(135deg,#6366f1,#8b5cf6 55%,#d946ef);color:#fff;box-shadow:0 4px 15px rgba(99,102,241,.35)}
+.sec-box{display:none}.sec-box.on{display:block;animation:up .35s both}
+.kart-detay{display:none;margin-top:.85rem;padding-top:.85rem;border-top:1px solid rgba(255,255,255,.08)}
+.kart-detay.on{display:block}
+</style>
 </head>
 <body class="min-h-screen">
-<div id="giris" class="max-w-sm mx-auto p-6 mt-12 up">
-  <div class="flex justify-end gap-2 mb-6"><button data-dl="tr" class="chip">Türkçe</button><button data-dl="ar" class="chip">العربية</button></div>
-  <div class="ibox grad w-16 h-16 mx-auto text-3xl" id="glogo"></div><h1 class="text-2xl font-extrabold text-center my-5 gt" data-i="giris"></h1>
+<div id="giris" class="max-w-sm mx-auto p-6 mt-10 up">
+  <div class="flex justify-between items-center mb-6">
+    <a href="index.html" class="chip text-xs" id="musteriDon">← Müşteri Sayfası</a>
+    <div class="flex gap-1.5"><button data-dl="tr" class="chip">TR</button><button data-dl="ar" class="chip">عربي</button></div>
+  </div>
+  <div class="ibox grad w-16 h-16 mx-auto text-3xl" id="glogo"></div>
+  <h1 class="text-2xl font-extrabold text-center my-4 gt" data-i="giris"></h1>
   <form id="girisForm" class="glass p-5 space-y-3">
     <input id="email" type="email" dir="ltr" data-p="email" class="inp" required>
     <input id="sifre" type="password" dir="ltr" data-p="sifre" class="inp" required>
@@ -17,42 +30,150 @@
     <p id="girisHata" class="text-rose-400 text-sm text-center"></p>
   </form>
 </div>
-<div id="panel" class="hidden max-w-4xl mx-auto p-4 pb-12">
-  <div class="flex justify-between items-center mb-4 gap-2"><div class="flex items-center gap-3"><div class="ibox grad w-10 h-10 text-lg" id="plogo"></div><h1 class="text-xl font-extrabold gt" data-i="panel"></h1></div>
-  <div class="flex gap-2"><button data-dl="tr" class="chip">TR</button><button data-dl="ar" class="chip">عربي</button><button id="cikis" class="chip" data-i="cikis"></button></div></div>
-  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4"></div>
-  <div class="grid md:grid-cols-2 gap-3 mb-4">
-    <div class="glass p-5"><div class="font-semibold mb-4" data-i="durumDag"></div><div id="donut"></div></div>
-    <div class="glass p-5"><div class="font-semibold mb-1" data-i="aylik"></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
+
+<div id="panel" class="hidden max-w-4xl mx-auto p-4 pb-16">
+  <!-- Ust Bar -->
+  <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
+    <div class="flex items-center gap-2.5">
+      <div class="ibox grad w-10 h-10 text-lg" id="plogo"></div>
+      <div>
+        <h1 class="text-lg font-extrabold gt leading-tight" data-i="panel"></h1>
+        <div class="text-xs text-slate-400" id="adminAltBilgi">Yönetim & Takip</div>
+      </div>
+    </div>
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <select id="adminPb" class="chip bg-slate-900/90 cursor-pointer font-semibold" title="Para Birimi">
+        <option value="TRY">₺ TRY</option>
+        <option value="USD">$ USD</option>
+        <option value="SYP">ل.س SYP</option>
+      </select>
+      <a href="index.html" class="chip" id="musteriGit" title="Müşteri Ekranı">Müşteri</a>
+      <button data-dl="tr" class="chip">TR</button>
+      <button data-dl="ar" class="chip">عربي</button>
+      <button id="cikis" class="chip text-rose-300" data-i="cikis"></button>
+    </div>
   </div>
-  <details class="glass p-5 mb-4">
-    <summary class="font-semibold cursor-pointer"><span data-i="sb"></span> <span class="text-xs text-slate-400 font-normal" data-i="sbN"></span></summary>
-    <form id="ayarForm" class="mt-4 grid gap-3 sm:grid-cols-2">
-      <input id="s_adi" data-p="sAdi" class="inp"><input id="s_tel" type="tel" dir="ltr" data-p="sTel" class="inp">
-      <input id="s_adres" data-p="sAdres" class="inp sm:col-span-2"><input id="s_saat" data-p="sSaat" class="inp sm:col-span-2">
-      <input id="s_harita" dir="ltr" data-p="sHarita" class="inp sm:col-span-2">
-      <button type="button" id="s_konum" class="btn ghost sm:col-span-2"></button>
-      <button id="s_btn" class="btn grad-g sm:col-span-2 py-3"></button>
-    </form>
-  </details>
-  <details class="glass p-5 mb-4" open>
-    <summary class="font-semibold cursor-pointer" data-i="yeni"></summary>
-    <form id="yeniForm" class="mt-4 grid gap-3 sm:grid-cols-2">
-      <input id="n_ad" data-p="ad" class="inp" required><input id="n_tel" type="tel" dir="ltr" data-p="tel" class="inp" required>
-      <input id="n_model" data-p="model" class="inp" required><input id="n_ucret" type="number" step="0.01" data-p="ucret" class="inp"><input id="n_on" type="number" step="0.01" min="0" data-p="onOdeme" class="inp sm:col-span-2">
-      <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="arizaSec"></div><div id="n_az"></div></div>
-      <textarea id="n_ariza" data-p="not" class="inp sm:col-span-2" rows="2"></textarea>
-      <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="onceF"></div><div id="n_pk"></div></div>
-      <button id="n_btn" class="btn grad-g sm:col-span-2 py-3"></button>
-    </form>
-  </details>
+
+  <!-- 4 Temiz Sekme -->
+  <nav class="nav-tabs mb-4" id="anaSekmeler">
+    <button type="button" class="nav-tab on" data-tab="cihazlar"><span id="t_cihazlar">Cihazlar</span></button>
+    <button type="button" class="nav-tab" data-tab="yeni"><span id="t_yeni">+ Yeni Kayıt</span></button>
+    <button type="button" class="nav-tab" data-tab="rapor"><span id="t_rapor">Özet & Yedek</span></button>
+    <button type="button" class="nav-tab" data-tab="ayar"><span id="t_ayar">Ayarlar</span></button>
+  </nav>
+
   <div id="yedekUy" class="hidden mb-3 text-sm rounded-xl px-4 py-3 bg-amber-500/15 text-amber-300"></div>
-  <div class="glass p-4 mb-4 flex flex-wrap gap-2 items-center"><span class="font-semibold flex-1" data-i="yedek"></span><button id="y_json" class="btn ghost" data-i="yJson"></button><button id="y_csv" class="btn ghost" data-i="yCsv"></button><button id="y_geri" class="btn ghost" data-i="yGeri"></button><input type="file" id="y_dosya" accept=".json,application/json" class="hidden"></div>
-  <details id="otoDet" class="glass p-4 mb-4"><summary class="font-semibold cursor-pointer" data-i="otoYedek"></summary><div id="otoListe" class="mt-3"></div></details>
-  <input id="ara" data-p="ara" class="inp mb-3">
-  <div class="flex gap-2 overflow-x-auto pb-2 mb-2" id="chips"></div>
-  <select id="sira" class="inp mb-3"></select>
-  <div id="liste" class="space-y-3"></div>
+
+  <!-- SEKME 1: CIHAZLAR -->
+  <section id="sec-cihazlar" class="sec-box on">
+    <div class="glass p-3 mb-3 space-y-2.5">
+      <div class="grid sm:grid-cols-3 gap-2">
+        <input id="ara" data-p="ara" class="inp sm:col-span-2">
+        <select id="sira" class="inp"></select>
+      </div>
+      <div class="flex gap-2 overflow-x-auto pb-1" id="chips"></div>
+    </div>
+    <div id="liste" class="space-y-3"></div>
+  </section>
+
+  <!-- SEKME 2: YENI KAYIT -->
+  <section id="sec-yeni" class="sec-box">
+    <div class="glass p-5">
+      <h2 class="font-bold text-lg mb-4 gt" data-i="yeni"></h2>
+      <form id="yeniForm" class="grid gap-3.5 sm:grid-cols-2">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="ad"></label>
+          <input id="n_ad" data-p="ad" class="inp" required>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="tel"></label>
+          <input id="n_tel" type="tel" dir="ltr" data-p="tel" class="inp" required>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="model"></label>
+          <input id="n_model" data-p="model" class="inp" required>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" id="lblParaBirimi">Para Birimi</label>
+          <select id="n_pb" class="inp">
+            <option value="TRY">Türk Lirası (₺ TRY)</option>
+            <option value="USD">Amerikan Doları ($ USD)</option>
+            <option value="SYP">Suriye Lirası (ل.س SYP)</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="ucret"></label>
+          <input id="n_ucret" type="number" step="0.01" data-p="ucret" class="inp">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="onOdeme"></label>
+          <input id="n_on" type="number" step="0.01" min="0" data-p="onOdeme" class="inp">
+        </div>
+        <div class="sm:col-span-2">
+          <div class="text-xs text-slate-400 mb-2" data-i="arizaSec"></div>
+          <div id="n_az"></div>
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs text-slate-400 mb-1" data-i="not"></label>
+          <textarea id="n_ariza" data-p="not" class="inp" rows="2"></textarea>
+        </div>
+        <div class="sm:col-span-2">
+          <div class="text-xs text-slate-400 mb-2" data-i="onceF"></div>
+          <div id="n_pk"></div>
+        </div>
+        <button id="n_btn" class="btn grad-g sm:col-span-2 py-3.5 text-base"></button>
+      </form>
+    </div>
+  </section>
+
+  <!-- SEKME 3: OZET & YEDEK -->
+  <section id="sec-rapor" class="sec-box space-y-4">
+    <div id="kartlar" class="grid grid-cols-2 md:grid-cols-3 gap-3"></div>
+    <div class="grid md:grid-cols-2 gap-3">
+      <div class="glass p-5"><div class="font-semibold mb-4" data-i="durumDag"></div><div id="donut"></div></div>
+      <div class="glass p-5"><div class="font-semibold mb-1" data-i="aylik"></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
+    </div>
+    <div class="glass p-4 flex flex-wrap gap-2 items-center">
+      <span class="font-semibold flex-1" data-i="yedek"></span>
+      <button id="y_json" class="btn ghost" data-i="yJson"></button>
+      <button id="y_csv" class="btn ghost" data-i="yCsv"></button>
+      <button id="y_geri" class="btn ghost" data-i="yGeri"></button>
+      <input type="file" id="y_dosya" accept=".json,application/json" class="hidden">
+    </div>
+    <details id="otoDet" class="glass p-4"><summary class="font-semibold cursor-pointer" data-i="otoYedek"></summary><div id="otoListe" class="mt-3"></div></details>
+  </section>
+
+  <!-- SEKME 4: AYARLAR -->
+  <section id="sec-ayar" class="sec-box">
+    <div class="glass p-5">
+      <div class="font-bold text-lg mb-1 gt" data-i="sb"></div>
+      <div class="text-xs text-slate-400 mb-4" data-i="sbN"></div>
+      <form id="ayarForm" class="grid gap-3.5 sm:grid-cols-2">
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="sAdi"></label>
+          <input id="s_adi" data-p="sAdi" class="inp">
+        </div>
+        <div>
+          <label class="block text-xs text-slate-400 mb-1" data-i="sTel"></label>
+          <input id="s_tel" type="tel" dir="ltr" data-p="sTel" class="inp">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs text-slate-400 mb-1" data-i="sAdres"></label>
+          <input id="s_adres" data-p="sAdres" class="inp">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs text-slate-400 mb-1" data-i="sSaat"></label>
+          <input id="s_saat" data-p="sSaat" class="inp">
+        </div>
+        <div class="sm:col-span-2">
+          <label class="block text-xs text-slate-400 mb-1" data-i="sHarita"></label>
+          <input id="s_harita" dir="ltr" data-p="sHarita" class="inp">
+        </div>
+        <button type="button" id="s_konum" class="btn ghost sm:col-span-2"></button>
+        <button id="s_btn" class="btn grad-g sm:col-span-2 py-3.5"></button>
+      </form>
+    </div>
+  </section>
 </div>
 <script src="config.js"></script><script src="ayarlar.js"></script><script src="diller.js"></script><script src="admin.js"></script>
 </body></html>
