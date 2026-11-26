@@ -485,87 +485,17 @@ const odemeBlok = k => {
 function waMesaj(k, tur){
   const ar = L === 'ar', pr = n => para(n, pb(k)), anah = k.erisim_anahtari || '', link = takipLinki(k.takip_kodu) + '&k=' + encodeURIComponent(anah) + '&dil=' + L, di = DURUMLAR.indexOf(k.durum), saat = AYAR.saat, od = odenen(k), kal = kalanDeger(k), ad = k.musteri_adi, md = k.cihaz_modeli, sv = AYAR.servis_adi;
   if(ar){
-    const kodS = `رمز التتبع: ${k.takip_kodu}
-كلمة السر: ${anah}`, para2 = (od > 0 ? `المدفوع: ${pr(od)}
-المتبقي: ${pr(kal)}
-` : '');
-    if(tur === 'yeni')  return `مرحباً ${ad}،
-
-تم استلام جهازك *${md}*.
-
-${kodS}
-
-تابع جهازك لحظة بلحظة:
-${link}
-
-${sv}`;
-    if(tur === 'hat')   return `مرحباً ${ad}،
-
-جهازك *${md}* جاهز وبانتظار استلامك.
-التكلفة: ${pr(k.ucret)}
-${para2}${saat ? 'ساعات العمل: ' + saat + '
-' : ''}
-التفاصيل: ${link}
-
-${sv}`;
-    if(tur === 'odeme') return `مرحباً ${ad}،
-
-تم استلام دفعتك، شكراً لك.
-الجهاز: *${md}*
-إجمالي المدفوع: ${pr(od)}
-${kal > 0 ? 'المتبقي: ' + pr(kal) : 'تم السداد بالكامل ✓'}
-
-${sv}`;
-    return `مرحباً ${ad}،
-
-حالة جهازك *${md}*: *${D_AR[di]}*
-التكلفة: ${pr(k.ucret)}
-${para2}
-تابع جهازك لحظة بلحظة:
-${link}
-
-${sv}`;
+    const kodS = `رمز التتبع: ${k.takip_kodu}\nكلمة السر: ${anah}`, para2 = (od > 0 ? `المدفوع: ${pr(od)}\nالمتبقي: ${pr(kal)}\n` : '');
+    if(tur === 'yeni')  return `مرحباً ${ad}،\n\nتم استلام جهازك *${md}*.\n\n${kodS}\n\nتابع جهازك لحظة بلحظة:\n${link}\n\n${sv}`;
+    if(tur === 'hat')   return `مرحباً ${ad}،\n\nجهازك *${md}* جاهز وبانتظار استلامك.\nالتكلفة: ${pr(k.ucret)}\n${para2}${saat ? 'ساعات العمل: ' + saat + '\n' : ''}\nالتفاصيل: ${link}\n\n${sv}`;
+    if(tur === 'odeme') return `مرحباً ${ad}،\n\nتم استلام دفعتك، شكراً لك.\nالجهاز: *${md}*\nإجمالي المدفوع: ${pr(od)}\n${kal > 0 ? 'المتبقي: ' + pr(kal) : 'تم السداد بالكامل ✓'}\n\n${sv}`;
+    return `مرحباً ${ad}،\n\nحالة جهازك *${md}*: *${D_AR[di]}*\nالتكلفة: ${pr(k.ucret)}\n${para2}\nتابع جهازك لحظة بلحظة:\n${link}\n\n${sv}`;
   }
-  const kodS = `Takip kodu: ${k.takip_kodu}
-Şifre: ${anah}`, para2 = (od > 0 ? `Ödenen: ${pr(od)}
-Kalan: ${pr(kal)}
-` : '');
-  if(tur === 'yeni')  return `Merhaba ${ad},
-
-*${md}* cihazınızı teslim aldık.
-
-${kodS}
-
-Cihazınızı anlık takip edin:
-${link}
-
-${sv}`;
-  if(tur === 'hat')   return `Merhaba ${ad},
-
-*${md}* cihazınız hazır ve teslim almanızı bekliyor.
-Ücret: ${pr(k.ucret)}
-${para2}${saat ? 'Çalışma saatlerimiz: ' + saat + '
-' : ''}
-Detay: ${link}
-
-${sv}`;
-  if(tur === 'odeme') return `Merhaba ${ad},
-
-Ödemenizi aldık, teşekkürler.
-Cihaz: *${md}*
-Toplam ödenen: ${pr(od)}
-${kal > 0 ? 'Kalan: ' + pr(kal) : 'Ödemeniz tamamlandı ✓'}
-
-${sv}`;
-  return `Merhaba ${ad},
-
-*${md}* cihazınızın durumu: *${k.durum}*
-Ücret: ${pr(k.ucret)}
-${para2}
-Cihazınızı anlık takip edin:
-${link}
-
-${sv}`;
+  const kodS = `Takip kodu: ${k.takip_kodu}\nŞifre: ${anah}`, para2 = (od > 0 ? `Ödenen: ${pr(od)}\nKalan: ${pr(kal)}\n` : '');
+  if(tur === 'yeni')  return `Merhaba ${ad},\n\n*${md}* cihazınızı teslim aldık.\n\n${kodS}\n\nCihazınızı anlık takip edin:\n${link}\n\n${sv}`;
+  if(tur === 'hat')   return `Merhaba ${ad},\n\n*${md}* cihazınız hazır ve teslim almanızı bekliyor.\nÜcret: ${pr(k.ucret)}\n${para2}${saat ? 'Çalışma saatlerimiz: ' + saat + '\n' : ''}\nDetay: ${link}\n\n${sv}`;
+  if(tur === 'odeme') return `Merhaba ${ad},\n\nÖdemenizi aldık, teşekkürler.\nCihaz: *${md}*\nToplam ödenen: ${pr(od)}\n${kal > 0 ? 'Kalan: ' + pr(kal) : 'Ödemeniz tamamlandı ✓'}\n\n${sv}`;
+  return `Merhaba ${ad},\n\n*${md}* cihazınızın durumu: *${k.durum}*\nÜcret: ${pr(k.ucret)}\n${para2}\nCihazınızı anlık takip edin:\n${link}\n\n${sv}`;
 }
 const waAc = (k, tur) => window.open(`https://wa.me/${telNo(k.musteri_tel)}?text=${encodeURIComponent(waMesaj(k, tur))}`, '_blank');
 let toastZ;
@@ -596,4 +526,5 @@ function realtimeBaslat(){
 }
 document.addEventListener('visibilitychange', () => { if(!document.hidden) rtYenile(); });
 
-uygula(); oturumKontrol();
+try{ uygula(); }catch(err){ console.error('uygula:', err); }
+oturumKontrol().catch(err => console.error('oturum:', err));

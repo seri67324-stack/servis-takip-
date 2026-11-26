@@ -1,4 +1,4 @@
-const C='servis-v12';
+const C='servis-v13';
 const VARLIK=['./','index.html','admin.html','tw.css','stil.css','config.js','ayarlar.js','diller.js','takip.js','admin.js','manifest.json','manifest-admin.json','icon-192.png','icon-512.png'];
 self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>Promise.allSettled(VARLIK.map(u=>c.add(u)))))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x)))).then(()=>clients.claim())));
