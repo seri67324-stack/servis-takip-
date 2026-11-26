@@ -1,6 +1,6 @@
-// Varsayılanlar. Asıl bilgileri Yönetim Paneli > "Servis Bilgilerim" bölümünden gireceksiniz.
+// Varsayılanlar. Asıl bilgileri artık Yönetim Paneli > "Servis Bilgilerim" bölümünden gireceksiniz.
 const AYAR = { servis_adi: (typeof SERVIS_ADI!=='undefined'?SERVIS_ADI:'Teknik Servis'), tel:'', adres:'', saat:'', harita:'' };
-const HAZIR_UYARI_GUN = 2;
+const HAZIR_UYARI_GUN = 3;
 const D_RENK = ['#94a3b8','#38bdf8','#fbbf24','#a78bfa','#34d399','#f472b6'];
 const D_IKON = ['inbox','search','hourglass','wrench','check','package'];
 const IC = {
@@ -22,22 +22,7 @@ const IC = {
  send:'<path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/>',
  download:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>',
  trash:'<path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
- save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>',
- users:'<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>'
+ save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>'
 };
 const ic = (n,c='') => `<svg class="ico ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
-
-// Uluslararası telefon formatı: + veya 00 ile girilmişse ülke kodunu korur; 09... Suriye mobil ise 963 ekler; 05... / 5... TR ise 90 ekler
-const telNo = t => {
-  const raw = String(t || '').trim();
-  const hasPlus = raw.startsWith('+');
-  let x = raw.replace(/\D/g, '');
-  if(!x) return '';
-  if(x.startsWith('00')) return x.slice(2);
-  if(hasPlus) return x;
-  if(x.startsWith('09') && x.length === 10) return '963' + x.slice(1);
-  if(x.startsWith('9') && x.length === 9) return '963' + x;
-  if(x.startsWith('0')) return '90' + x.slice(1);
-  if(x.length === 10 && x.startsWith('5')) return '90' + x;
-  return x;
-};
+const telNo = t => { let x = String(t).replace(/\D/g,''); if(x.startsWith('0')) x = x.slice(1); if(!x.startsWith('90')) x = '90'+x; return x; };

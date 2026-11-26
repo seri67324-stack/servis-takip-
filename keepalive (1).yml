@@ -1,0 +1,29 @@
+name: keepalive
+on:
+  schedule:
+    - cron: '0 6 */3 * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Supabase uyanık tut
+        run: |
+          URL=$(grep -oP "SUPABASE_URL\s*=\s*'\K[^']+" config.js)
+          KEY=$(grep -oP "SUPABASE_ANON_KEY\s*=\s*'\K[^']+" config.js)
+          curl -fsS "$URL/rest/v1/ayarlar?select=sahip_id&limit=1" -H "apikey: $KEY" -H "Authorization: Bearer $KEY"
+      - name: Repo etkin kalsın (GitHub 60 gün kuralı)
+        run: |
+          son=$(git log -1 --format=%ct)
+          simdi=$(date +%s)
+          if [ $(( (simdi - son) / 86400 )) -ge 30 ]; then
+            date -u +%F > .github/keepalive.txt
+            git config user.name "keepalive-bot"
+            git config user.email "keepalive-bot@users.noreply.github.com"
+            git add .github/keepalive.txt
+            git commit -m "keepalive: repo etkin kalsin"
+            git push
+          fi
