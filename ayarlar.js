@@ -25,4 +25,19 @@ const IC = {
  save:'<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/>'
 };
 const ic = (n,c='') => `<svg class="ico ${c}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${IC[n]||''}</svg>`;
-const telNo = t => { let x = String(t).replace(/\D/g,''); if(x.startsWith('0')) x = x.slice(1); if(!x.startsWith('90')) x = '90'+x; return x; };
+// WhatsApp için uluslararası numara (ülke kodunu bozmaz).
+// +963..., 00963..., 905..., 05xx..., 09xx... (Suriye) ve Arapça rakamlar desteklenir.
+const VARSAYILAN_ULKE = '90';
+const telNo = raw => {
+  let s = String(raw||'').trim().replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d));
+  const art = s.startsWith('+') || s.startsWith('00'); let x = s.replace(/\D/g,'');
+  if(x.startsWith('00')) x = x.slice(2);
+  if(art) return x;                                              // +90..., +963..., 00... → olduğu gibi
+  if(x.startsWith('0')){ const y = x.slice(1);                     // yerel numara (başında 0)
+    if(y.startsWith('9') && y.length===9) return '963'+y;           // Suriye: 09xx xxx xxx
+    return VARSAYILAN_ULKE+y; }                                     // Türkiye: 05xx...
+  if(x.length===10 && x[0]==='5') return '90'+x;                    // 5xx xxx xx xx
+  if(x.length===9 && x[0]==='9') return '963'+x;                    // 9xx xxx xxx (Suriye)
+  if(x.length>=11) return x;                                        // ülke kodu zaten var (905..., 963..., 49...)
+  return VARSAYILAN_ULKE+x; };
+

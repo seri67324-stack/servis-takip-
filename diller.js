@@ -59,3 +59,11 @@ Object.assign(ADM.tr,{ucret:'Ücret',onOdeme:'Ön ödeme (varsa)',tutar:'Tutar',
 Object.assign(ADM.ar,{ucret:'التكلفة',onOdeme:'دفعة مقدمة (إن وجدت)',tutar:'المبلغ',aktif:'أجهزة قيد العمل',bekleyen:'بانتظار التسليم',ciro:'تحصيل هذا الشهر',alacak:'المبالغ المتبقية',
  yeniBtn:'تسجيل جهاز جديد',ist:'الإحصائيات والرسوم',ayarlar:'الإعدادات والنسخ الاحتياطي',foto:'الصور',arizaT:'نوع العطل',pbKilit:'لا يمكن تغيير العملة بعد استلام دفعة',sUcretK:'المتبقي (الأعلى أولاً)'});
 const PB_AD = {TRY:'TL (₺)', USD:'USD ($)', SYP:'SYP (ل.س)'};
+
+// ---- v12: temalar, hatırlatma sırası, tahsilat özeti, ödeme geçmişi ----
+Object.assign(ADM.tr,{tema:'Tema',hatEsik:'Şu kadar günü geçen:',hatFiltre:'Listede göster',hatBas:n=>`Teslim hatırlatma sırası · ${n}`,gunS:'gün',hatSon:'Son hatırlatma',hatYokS:'Hiç hatırlatılmadı',bugunS:'bugün',dunS:'dün',gunOnce:n=>`${n} gün önce`,hatGonder:'Hatırlat',
+ thsl:'Tahsilat özeti',pGun:'Bugün',pHafta:'Bu hafta',pAy:'Bu ay',tHepsi:'Hepsi',tTop:'Toplam',tAdet:'ödeme',tYok:'Bu dönemde ödeme yok.',odGecmis:'Ödeme geçmişi',
+ temaAd:{gece:'Gece',okyanus:'Okyanus',orman:'Orman',gun:'Gün Işığı'}});
+Object.assign(ADM.ar,{tema:'المظهر',hatEsik:'تجاوز عدد الأيام:',hatFiltre:'عرض في القائمة',hatBas:n=>`قائمة تذكير التسليم · ${n}`,gunS:'يوم',hatSon:'آخر تذكير',hatYokS:'لم يُرسل تذكير',bugunS:'اليوم',dunS:'أمس',gunOnce:n=>`قبل ${n} يوم`,hatGonder:'تذكير',
+ thsl:'ملخص التحصيل',pGun:'اليوم',pHafta:'هذا الأسبوع',pAy:'هذا الشهر',tHepsi:'الكل',tTop:'الإجمالي',tAdet:'دفعة',tYok:'لا توجد دفعات في هذه الفترة.',odGecmis:'سجل الدفعات',
+ temaAd:{gece:'ليلي',okyanus:'محيط',orman:'غابة',gun:'نهاري'}});
