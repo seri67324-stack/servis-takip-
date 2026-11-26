@@ -67,3 +67,5 @@ Object.assign(ADM.tr,{tema:'Tema',hatEsik:'Şu kadar günü geçen:',hatFiltre:'
 Object.assign(ADM.ar,{tema:'المظهر',hatEsik:'تجاوز عدد الأيام:',hatFiltre:'عرض في القائمة',hatBas:n=>`قائمة تذكير التسليم · ${n}`,gunS:'يوم',hatSon:'آخر تذكير',hatYokS:'لم يُرسل تذكير',bugunS:'اليوم',dunS:'أمس',gunOnce:n=>`قبل ${n} يوم`,hatGonder:'تذكير',
  thsl:'ملخص التحصيل',pGun:'اليوم',pHafta:'هذا الأسبوع',pAy:'هذا الشهر',tHepsi:'الكل',tTop:'الإجمالي',tAdet:'دفعة',tYok:'لا توجد دفعات في هذه الفترة.',odGecmis:'سجل الدفعات',
  temaAd:{gece:'ليلي',okyanus:'محيط',orman:'غابة',gun:'نهاري'}});
+
+Object.assign(ADM.tr,{sKapali:'Çalışma saatini gösterme'});Object.assign(ADM.ar,{sKapali:'عدم إظهار ساعات العمل'});

@@ -29,14 +29,14 @@ function uygula(){
   const sv = $('sira').value || 'yeni';
   $('sira').innerHTML = [['yeni','sYeni'],['eski','sEski'],['ucret','sUcret']].map(([v,k])=>`<option value="${v}">${t(k)}</option>`).join(''); $('sira').value = sv;
   const pv = $('n_pb').value || 'TRY'; $('n_pb').innerHTML = PB.map(c=>`<option value="${c}">${PB_AD[c]}</option>`).join(''); $('n_pb').value = pv;
-  temaCiz(); $('hatGun').innerHTML = [1,2,3,5,7,14].map(n=>`<option value="${n}" ${n===hazirGun?'selected':''}>${n} ${t('gunS')}</option>`).join('');
+  saatSecCiz(); saatYaz(); temaCiz(); $('hatGun').innerHTML = [1,2,3,5,7,14].map(n=>`<option value="${n}" ${n===hazirGun?'selected':''}>${n} ${t('gunS')}</option>`).join('');
   $('n_az').innerHTML = arizaChips([]); $('n_pk').innerHTML = picker('yeni','once');
   if(kayitlar.length){ istatistik(); ciz(); }
 }
 async function oturumKontrol(){
   const {data:{session}} = await sb.auth.getSession();
   $('giris').classList.toggle('hidden', !!session); $('panel').classList.toggle('hidden', !session);
-  if(session){ realtimeBaslat(); yukle(); ayarYukle().then(A=>{ $('s_adi').value=A.servis_adi||''; $('s_tel').value=A.tel||''; $('s_adres').value=A.adres||''; $('s_saat').value=A.saat||''; $('s_harita').value=A.harita||''; }); }
+  if(session){ realtimeBaslat(); yukle(); ayarYukle().then(A=>{ $('s_adi').value=A.servis_adi||''; $('s_tel').value=A.tel||''; $('s_adres').value=A.adres||''; $('s_saat').value=A.saat||''; saatCoz(); $('s_harita').value=A.harita||''; }); }
 }
 $('girisForm').onsubmit = async e=>{ e.preventDefault();
   const {error} = await sb.auth.signInWithPassword({email:$('email').value, password:$('sifre').value});
@@ -310,5 +310,18 @@ function tahsilat(){
 }
 $('thPer').onclick = e=>{ const b=e.target.closest('[data-tp]'); if(b){ thPer=b.dataset.tp; tahsilat(); } };
 $('thPb').onclick = e=>{ const b=e.target.closest('[data-tb]'); if(b){ thPb=b.dataset.tb; tahsilat(); } };
+
+// Çalışma saatleri seçici: gün aralığı + açılış/kapanış saati → "Pazartesi - Cumartesi, 09:00 - 19:00"
+const GUNLER = {tr:['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'], ar:['الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت','الأحد']};
+function saatSecCiz(){ const v1=$('sg1').value||'0', v2=$('sg2').value||'5', o=GUNLER[L].map((g,i)=>`<option value="${i}">${g}</option>`).join('');
+  $('sg1').innerHTML=o; $('sg2').innerHTML=o; $('sg1').value=v1; $('sg2').value=v2; }
+function saatYaz(){ const k=$('sKapali').checked; ['sg1','sg2','ss1','ss2'].forEach(i=>$(i).disabled=k);
+  $('s_saat').value = k ? '' : `${GUNLER[L][+$('sg1').value]} - ${GUNLER[L][+$('sg2').value]}, ${$('ss1').value} - ${$('ss2').value}`; }
+function saatCoz(){ const m=($('s_saat').value||'').match(/(\d{1,2}:\d{2})\s*[-–]\s*(\d{1,2}:\d{2})/); saatSecCiz();
+  if(m){ $('ss1').value=m[1].padStart(5,'0'); $('ss2').value=m[2].padStart(5,'0'); }
+  for(const l of ['tr','ar']){ const g=GUNLER[l], t=$('s_saat').value||''; let a=-1,b=-1; g.forEach((n,i)=>{ const x=t.indexOf(n); if(x>=0){ if(a<0) a=i; else b=i; } }); if(a>=0){ $('sg1').value=a; $('sg2').value=b>=0?b:a; } }
+  saatYaz(); }
+['sg1','sg2','ss1','ss2','sKapali'].forEach(i=>$(i).addEventListener('change',saatYaz));
+saatSecCiz(); saatYaz();
 
 uygula(); oturumKontrol();
