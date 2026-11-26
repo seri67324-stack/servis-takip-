@@ -2,36 +2,11 @@
 const SUPABASE_URL = 'https://locusbvqjwcwwcnfmryz.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY3VzYnZxandjd3djbmZtcnl6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ3OTc1NDMsImV4cCI6MjExMDM3MzU0M30.GTigrpw63qdgwAg-s3LclxBynSGaBF6ifPiR9tLfeiE';
 const SERVIS_ADI = 'Teknik Servis';
-const SITE_ADRESI = ''; // Boşsa otomatik algılanır. Örn: https://qrcodesy.site
+const SITE_ADRESI = ''; // Boşsa otomatik algılanır. Örn: https://servisim.vercel.app
 // =============================
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const DURUMLAR = ['Kabul Edildi','İnceleniyor','Parça Bekleniyor','Onarımda','Tamamlandı / Hazır','Teslim Edildi'];
-
-const PARA_BIRIMLERI = {
-  TRY: { kod: 'TRY', sembol: '₺', adTr: 'Türk Lirası (₺)', adAr: 'ليرة تركية (₺)', ondalik: 2 },
-  USD: { kod: 'USD', sembol: '$', adTr: 'Amerikan Doları ($)', adAr: 'دولار أمريكي ($)', ondalik: 2 },
-  SYP: { kod: 'SYP', sembol: 'ل.س', adTr: 'Suriye Lirası (ل.س)', adAr: 'ليرة سورية (ل.س)', ondalik: 0 }
-};
-
-function getParaBirimi(){
-  try{
-    const c = localStorage.getItem('paraBirimi');
-    if(c && PARA_BIRIMLERI[c]) return c;
-  }catch(e){}
-  return 'TRY';
-}
-
-function paraFormat(n, kod, dil){
-  const pb = PARA_BIRIMLERI[kod] || PARA_BIRIMLERI[getParaBirimi()] || PARA_BIRIMLERI.TRY;
-  const val = Number(n || 0);
-  const loc = (dil === 'ar') ? 'en-US' : 'tr-TR';
-  const fmt = val.toLocaleString(loc, { minimumFractionDigits: pb.ondalik, maximumFractionDigits: pb.ondalik });
-  if(pb.kod === 'USD') return '$' + fmt;
-  if(pb.kod === 'SYP') return fmt + ' ' + pb.sembol;
-  return (dil === 'ar') ? (fmt + ' ₺') : (fmt + ' ₺');
-}
-
-const tl = n => paraFormat(n, getParaBirimi(), 'tr');
+const tl = n => new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY'}).format(n||0);
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function takipLinki(kod){
   const base = SITE_ADRESI || (location.origin + location.pathname.replace(/[^\/]*$/,''));
