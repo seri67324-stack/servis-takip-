@@ -1,11 +1,6 @@
 // Varsayılanlar. Asıl bilgileri artık Yönetim Paneli > "Servis Bilgilerim" bölümünden gireceksiniz.
 const AYAR = { servis_adi: (typeof SERVIS_ADI!=='undefined'?SERVIS_ADI:'Teknik Servis'), tel:'', adres:'', saat:'', harita:'' };
 const HAZIR_UYARI_GUN = 3;
-async function ayarYukle(){
-  try{ const {data} = await sb.from('ayarlar').select('*').eq('id',1).maybeSingle();
-    if(data) for(const k in data) if(data[k]) AYAR[k]=data[k]; }catch(e){}
-  return AYAR;
-}
 const D_RENK = ['#94a3b8','#38bdf8','#fbbf24','#a78bfa','#34d399','#f472b6'];
 const D_IKON = ['inbox','search','hourglass','wrench','check','package'];
 const IC = {

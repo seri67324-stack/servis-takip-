@@ -37,10 +37,18 @@ async function fotoYukle(file, kod, tip){
   return sb.storage.from('cihaz-fotolari').getPublicUrl(yol).data.publicUrl;
 }
 
-const kodUret5 = () => 'SRV-' + String(Math.floor(10000 + Math.random()*90000));
+const kodUret5 = () => 'SRV-' + String(100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000));
 Object.assign(ADM.tr,{cop:'Silinenler',geriAl:'Geri al',kalici:'Kalıcı sil',kaliciOnay:'Bu kayıt KALICI olarak silinsin mi? Geri alınamaz.',silOnay:'Kayıt "Silinenler" bölümüne taşınsın mı? (Geri alınabilir)',
  yedek:'Yedek',yJson:'Yedek indir (JSON)',yCsv:'Excel (CSV)',yGeri:'Yedekten yükle',yedekUy:'Son yedeğiniz 7 günden eski. Lütfen "Yedek indir (JSON)" ile yedek alın.',yedekOk:n=>`${n} kayıt yüklendi.`,yedekOnay:'Yedekteki kayıtlar bu hesaba yüklenecek. Devam edilsin mi?'});
 Object.assign(ADM.ar,{cop:'المحذوفات',geriAl:'استرجاع',kalici:'حذف نهائي',kaliciOnay:'هل تريد حذف هذا السجل نهائياً؟ لا يمكن التراجع.',silOnay:'هل تريد نقل السجل إلى المحذوفات؟ (يمكن استرجاعه)',
  yedek:'نسخة احتياطية',yJson:'تنزيل نسخة (JSON)',yCsv:'إكسل (CSV)',yGeri:'استعادة من نسخة',yedekUy:'آخر نسخة احتياطية أقدم من 7 أيام. يرجى تنزيل نسخة جديدة.',yedekOk:n=>`تم تحميل ${n} سجل.`,yedekOnay:'سيتم تحميل سجلات النسخة إلى هذا الحساب. هل تريد المتابعة؟'});
 Object.assign(ADM.tr,{otoYedek:'Otomatik Yedekler (son 30 gün)',otoYok:'Henüz otomatik yedek yok. İlk yedek bu gece 03:00\'te oluşur.',kayitS:'kayıt',otoGeri:'Bu güne geri dön',otoOnay:'Bu tarihteki kayıtlar geri yüklenecek. O günden sonra bu kayıtlarda yaptığınız değişiklikler eski haline döner (sonradan eklenen kayıtlar silinmez). Devam edilsin mi?',otoOk:n=>`${n} kayıt geri yüklendi.`});
 Object.assign(ADM.ar,{otoYedek:'النسخ الاحتياطية التلقائية (آخر 30 يوماً)',otoYok:'لا توجد نسخ تلقائية بعد. أول نسخة تُنشأ الليلة.',kayitS:'سجل',otoGeri:'الرجوع إلى هذا اليوم',otoOnay:'سيتم استرجاع سجلات هذا التاريخ، وستعود التعديلات اللاحقة عليها إلى حالتها السابقة (السجلات المضافة لاحقاً لا تُحذف). هل تريد المتابعة؟',otoOk:n=>`تم استرجاع ${n} سجل.`});
+
+// ---- v10: ödeme takibi, bildirim, alacak ----
+Object.assign(ADM.tr,{ciro:'Bu Ay Tahsilat',aylik:'Aylık Tahsilat',alacak:'Kalan Alacak',buAyKayit:'Bu Ay Kayıt',onOdeme:'Alınan ön ödeme (₺) - varsa',
+ odeme:'Ödeme',kalan:'Kalan',odendi:'Ödeme tamamlandı ✓',tutar:'Tutar (₺)',odemeEkle:'Ödeme al',kalaniAl:'Kalanı al',sonOdemeSil:'Son ödemeyi sil',
+ odemeOk:'Ödeme kaydedildi.',durumOk:'Kayıt güncellendi. Müşteriye bildirilsin mi?',yeniOk:'Kayıt oluşturuldu. Takip linkini müşteriye gönderin.'});
+Object.assign(ADM.ar,{ciro:'تحصيل هذا الشهر',aylik:'التحصيل الشهري',alacak:'المبالغ المتبقية',buAyKayit:'سجلات هذا الشهر',onOdeme:'دفعة مقدمة (₺) - إن وجدت',
+ odeme:'الدفع',kalan:'المتبقي',odendi:'تم السداد بالكامل ✓',tutar:'المبلغ (₺)',odemeEkle:'تسجيل دفعة',kalaniAl:'تحصيل المتبقي',sonOdemeSil:'حذف آخر دفعة',
+ odemeOk:'تم تسجيل الدفعة.',durumOk:'تم تحديث السجل. هل تريد إبلاغ العميل؟',yeniOk:'تم إنشاء السجل. أرسل رابط التتبع للعميل.'});

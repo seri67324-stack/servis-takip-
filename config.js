@@ -7,7 +7,6 @@ const SITE_ADRESI = ''; // Boşsa otomatik algılanır. Örn: https://servisim.v
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const DURUMLAR = ['Kabul Edildi','İnceleniyor','Parça Bekleniyor','Onarımda','Tamamlandı / Hazır','Teslim Edildi'];
 const tl = n => new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY'}).format(n||0);
-const kodUret = () => 'SRV-' + String(Math.floor(1000 + Math.random()*9000));
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function takipLinki(kod){
   const base = SITE_ADRESI || (location.origin + location.pathname.replace(/[^\/]*$/,''));
@@ -27,12 +26,5 @@ function sikistir(file, maxW=1080, q=0.7){
     img.onerror = ()=>rej(new Error('Görsel okunamadı'));
     img.src = url;
   });
-}
-async function fotoYukle(file, kod, tip){
-  const blob = await sikistir(file);
-  const yol = `${kod}/${tip}_${Date.now()}.jpg`;
-  const {error} = await sb.storage.from('cihaz-fotolari').upload(yol, blob, {contentType:'image/jpeg'});
-  if(error) throw error;
-  return sb.storage.from('cihaz-fotolari').getPublicUrl(yol).data.publicUrl;
 }
 if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});

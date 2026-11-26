@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="tr"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest.json"><meta name="theme-color" content="#060914">
-<script src="https://cdn.tailwindcss.com"></script>
+<title>Servis Yönetim Paneli</title><link rel="manifest" href="manifest-admin.json"><meta name="robots" content="noindex,nofollow"><meta name="theme-color" content="#060914">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="stil.css"><style>[dir=rtl] body{font-family:Tajawal,system-ui,sans-serif}</style>
+<link rel="stylesheet" href="tw.css"><link rel="stylesheet" href="stil.css"><style>[dir=rtl] body{font-family:Tajawal,system-ui,sans-serif}</style>
 </head>
 <body class="min-h-screen">
 <div id="giris" class="max-w-sm mx-auto p-6 mt-12 up">
@@ -21,7 +20,7 @@
 <div id="panel" class="hidden max-w-4xl mx-auto p-4 pb-12">
   <div class="flex justify-between items-center mb-4 gap-2"><div class="flex items-center gap-3"><div class="ibox grad w-10 h-10 text-lg" id="plogo"></div><h1 class="text-xl font-extrabold gt" data-i="panel"></h1></div>
   <div class="flex gap-2"><button data-dl="tr" class="chip">TR</button><button data-dl="ar" class="chip">عربي</button><button id="cikis" class="chip" data-i="cikis"></button></div></div>
-  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"></div>
+  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4"></div>
   <div class="grid md:grid-cols-2 gap-3 mb-4">
     <div class="glass p-5"><div class="font-semibold mb-4" data-i="durumDag"></div><div id="donut"></div></div>
     <div class="glass p-5"><div class="font-semibold mb-1" data-i="aylik"></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
@@ -40,7 +39,7 @@
     <summary class="font-semibold cursor-pointer" data-i="yeni"></summary>
     <form id="yeniForm" class="mt-4 grid gap-3 sm:grid-cols-2">
       <input id="n_ad" data-p="ad" class="inp" required><input id="n_tel" type="tel" dir="ltr" data-p="tel" class="inp" required>
-      <input id="n_model" data-p="model" class="inp" required><input id="n_ucret" type="number" step="0.01" data-p="ucret" class="inp">
+      <input id="n_model" data-p="model" class="inp" required><input id="n_ucret" type="number" step="0.01" data-p="ucret" class="inp"><input id="n_on" type="number" step="0.01" min="0" data-p="onOdeme" class="inp sm:col-span-2">
       <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="arizaSec"></div><div id="n_az"></div></div>
       <textarea id="n_ariza" data-p="not" class="inp sm:col-span-2" rows="2"></textarea>
       <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="onceF"></div><div id="n_pk"></div></div>

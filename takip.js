@@ -7,8 +7,8 @@ const AR = { sub:'تابع حالة جهازك لحظة بلحظة', ph:'رمز 
   hazirT:'جهازك جاهز', hazirD:'يمكنك استلامه في أي وقت.', step:'المرحلة', cust:'العميل', fault:'العطل', work:'الإجراء المنفذ', none:'لم يتم إدخاله بعد', price:'التكلفة',
   before:'قبل الإصلاح', after:'بعد الإصلاح', now:'المرحلة الحالية', call:'اتصال', wa:'واتساب', route:'الاتجاهات', live:'تحديث تلقائي', title:'تتبع الجهاز',
   d:['تم الاستلام','قيد الفحص','بانتظار قطعة الغيار','قيد الإصلاح','اكتمل / جاهز','تم التسليم'], loc:'ar-u-nu-latn' };
-TR.ph2='Telefonunuzun son 4 hanesi'; TR.anahtarIste='Güvenlik için kodu ve telefonunuzun son 4 hanesini girin.'; TR.nf='Kayıt bulunamadı. Kod ve telefon hanelerini kontrol edin.';
-AR.ph2='آخر 4 أرقام من هاتفك'; AR.anahtarIste='للأمان، أدخل الرمز وآخر 4 أرقام من هاتفك.'; AR.nf='لم يتم العثور على سجل. تحقق من الرمز وأرقام الهاتف.';
+TR.ph2='Takip şifresi (mesajda yazıyor)'; TR.anahtarIste='Güvenlik için takip kodunu ve şifreyi girin.'; TR.nf='Kayıt bulunamadı. Kod ve şifreyi kontrol edin. Çok fazla hatalı denemede bir süre beklemeniz gerekir.'; TR.paid='Ödenen'; TR.rest='Kalan'; TR.allPaid='Ödeme tamamlandı ✓';
+AR.ph2='كلمة سر التتبع (مذكورة في الرسالة)'; AR.anahtarIste='للأمان، أدخل رمز التتبع وكلمة السر.'; AR.nf='لم يتم العثور على سجل. تحقق من الرمز وكلمة السر. بعد محاولات خاطئة كثيرة يجب الانتظار قليلاً.'; AR.paid='المدفوع'; AR.rest='المتبقي'; AR.allPaid='تم السداد بالكامل ✓';
 const TT = {tr:TR, ar:AR};
 let L = 'tr'; try{ const sd = localStorage.getItem('dil'); L = sd ? (sd==='ar'?'ar':'tr') : ((navigator.language||'').toLowerCase().startsWith('ar')?'ar':'tr'); const pd = new URLSearchParams(location.search).get('dil'); if(pd==='ar'||pd==='tr'){ L=pd; localStorage.setItem('dil',pd); } }catch(e){}
 const t = k => TT[L][k];
@@ -62,6 +62,8 @@ function goster(k){
   const fotolar = grup(k.fotolar_once,t('before')) + grup(k.fotolar_sonra,t('after'));
   const satir = (a,v)=>`<div><div class="text-xs uppercase tracking-wide text-slate-500">${a}</div><div class="mt-0.5">${v}</div></div>`;
   const tarih = new Date(k.olusturma_tarihi).toLocaleDateString(t('loc'));
+  const od = +k.odenen||0, kalan = Math.max(0,(+k.ucret||0)-od);
+  const odemeHtml = od>0 ? `<div class="flex justify-between text-sm"><span class="text-slate-400">${t('paid')}</span><span dir="ltr" class="text-emerald-300">${para(od)}</span></div><div class="flex justify-between text-sm"><span class="text-slate-400">${t('rest')}</span>${kalan>0?`<span dir="ltr" class="font-bold">${para(kalan)}</span>`:`<span class="text-emerald-300 font-semibold">${t('allPaid')}</span>`}</div>` : '';
   $('sonuc').innerHTML = `
   ${hazir?`<div class="glass p-4 flex items-center gap-3 pulse" style="border-color:#34d399"><span class="ibox w-11 h-11 text-xl" style="background:#34d39922;color:#34d399">${ic('check')}</span><div><div class="font-bold text-emerald-300">${t('hazirT')}</div><div class="text-sm text-slate-300">${t('hazirD')}</div></div></div>`:''}
   <div class="glass p-5">
@@ -72,6 +74,7 @@ function goster(k){
   <div class="glass p-5 space-y-4 text-sm">
     ${satir(t('cust'),esc(k.musteri_adi))}${satir(t('fault'),arizaHtml(k))}${satir(t('work'),esc(k.yapilan_islem)||'<span class="text-slate-500">'+t('none')+'</span>')}
     <div class="flex justify-between items-center border-t border-white/10 pt-4"><span class="flex items-center gap-2 text-slate-400">${ic('wallet')} ${t('price')}</span><span class="text-2xl font-extrabold gt" dir="ltr">${para(k.ucret)}</span></div>
+    ${odemeHtml}
   </div>
   ${fotolar?`<div class="glass p-5 space-y-4">${fotolar}</div>`:''}`;
   $('sonuc').classList.remove('hidden');

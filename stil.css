@@ -21,3 +21,7 @@ body{background:#060914;background-image:radial-gradient(55rem 38rem at 0% -10%,
 .ringa{animation:ring 1.2s ease-out both}
 @keyframes draw{from{stroke-dashoffset:600}}
 .draw{stroke-dasharray:600;animation:draw 1.4s ease-out both}
+
+.odeme{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:1rem;padding:.8rem}
+#toast{display:none;position:fixed;left:.75rem;right:.75rem;bottom:calc(.75rem + env(safe-area-inset-bottom,0px));z-index:60;align-items:center;gap:.5rem;background:rgba(15,23,42,.96);border:1px solid rgba(255,255,255,.15);border-radius:1.1rem;padding:.7rem .8rem;box-shadow:0 12px 40px rgba(0,0,0,.6);font-size:.9rem;max-width:32rem;margin:0 auto}
+#toast.show{display:flex}

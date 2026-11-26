@@ -33,12 +33,12 @@ function uygula(){
 async function oturumKontrol(){
   const {data:{session}} = await sb.auth.getSession();
   $('giris').classList.toggle('hidden', !!session); $('panel').classList.toggle('hidden', !session);
-  if(session){ yukle(); ayarYukle().then(A=>{ $('s_adi').value=A.servis_adi||''; $('s_tel').value=A.tel||''; $('s_adres').value=A.adres||''; $('s_saat').value=A.saat||''; $('s_harita').value=A.harita||''; }); }
+  if(session){ realtimeBaslat(); yukle(); ayarYukle().then(A=>{ $('s_adi').value=A.servis_adi||''; $('s_tel').value=A.tel||''; $('s_adres').value=A.adres||''; $('s_saat').value=A.saat||''; $('s_harita').value=A.harita||''; }); }
 }
 $('girisForm').onsubmit = async e=>{ e.preventDefault();
   const {error} = await sb.auth.signInWithPassword({email:$('email').value, password:$('sifre').value});
   if(error) $('girisHata').textContent = t('girisHata'); else oturumKontrol(); };
-$('cikis').onclick = async()=>{ await sb.auth.signOut(); oturumKontrol(); };
+$('cikis').onclick = async()=>{ try{ await sb.removeAllChannels(); }catch(e){} rtKanal=null; await sb.auth.signOut(); oturumKontrol(); };
 $('s_konum').onclick = ()=> navigator.geolocation.getCurrentPosition(p=>{ $('s_harita').value=`https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`; }, ()=>alert(t('konumHata')));
 $('ayarForm').onsubmit = async e=>{ e.preventDefault();
   const {data:{user}} = await sb.auth.getUser(); const row = {sahip_id:user.id, servis_adi:$('s_adi').value.trim(), tel:$('s_tel').value.trim(), adres:$('s_adres').value.trim(), saat:$('s_saat').value.trim(), harita:$('s_harita').value.trim()};
@@ -53,9 +53,9 @@ async function yukle(){
 function istatistik(){
   const aktif = kayitlar.filter(k=>k.durum!=='Teslim Edildi').length, bk = kayitlar.filter(bekliyor).length;
   const anahtar = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-  const ciroAy = {}; kayitlar.forEach(k=>{ const a = anahtar(new Date(k.olusturma_tarihi)); ciroAy[a]=(ciroAy[a]||0)+(+k.ucret||0); });
-  const simdi = new Date(), buAy = ciroAy[anahtar(simdi)]||0, D = dn();
-  const kt = [['layers',t('toplam'),kayitlar.length,'#818cf8'],['wrench',t('aktif'),aktif,'#fbbf24'],['alert',t('bekleyen'),bk,'#f87171'],['wallet',t('ciro'),para(buAy),'#34d399']];
+  const ciroAy = {}; kayitlar.forEach(k=>(k.odemeler||[]).forEach(o=>{ const a = anahtar(new Date(o.d)); ciroAy[a]=(ciroAy[a]||0)+(+o.t||0); }));
+  const simdi = new Date(), buAy = ciroAy[anahtar(simdi)]||0, D = dn(), alacak = kayitlar.reduce((a,k)=>a+kalanDeger(k),0), buAyKayit = kayitlar.filter(k=>anahtar(new Date(k.olusturma_tarihi))===anahtar(simdi)).length;
+  const kt = [['layers',t('toplam'),kayitlar.length,'#818cf8'],['wrench',t('aktif'),aktif,'#fbbf24'],['alert',t('bekleyen'),bk,'#f87171'],['wallet',t('ciro'),para(buAy),'#34d399'],['clock',t('alacak'),para(alacak),'#fb923c'],['inbox',t('buAyKayit'),buAyKayit,'#38bdf8']];
   $('kartlar').innerHTML = kt.map(([i,tt,v,c])=>`<div class="glass p-4 up"><div class="ibox w-10 h-10 text-lg" style="background:${c}22;color:${c}">${ic(i)}</div><div class="text-xl font-extrabold mt-3">${v}</div><div class="text-xs text-slate-400">${tt}</div></div>`).join('');
   const say = DURUMLAR.map(d=>kayitlar.filter(k=>k.durum===d).length), T = say.reduce((a,b)=>a+b,0);
   let ac = 0; const dil = T ? say.map((n,i)=>{ const s=ac/T*100; ac+=n; return `${D_RENK[i]} ${s}% ${ac/T*100}%`; }).join(',') : '#1e293b 0 100%';
@@ -91,6 +91,7 @@ function ciz(){
       <select class="inp f-durum">${DURUMLAR.map((d,i)=>`<option value="${d}" ${d===k.durum?'selected':''}>${D[i]}</option>`).join('')}</select>
       <input type="number" step="0.01" class="inp f-ucret" value="${k.ucret||0}">
       <textarea class="inp f-islem sm:col-span-2" rows="2" placeholder="${t('islem')}">${esc(k.yapilan_islem)}</textarea>
+      ${odemeBlok(k)}
       <div><div class="text-xs text-slate-400 mb-1">${t('oncesi')} (${liste(k,'once').length})</div>${picker(k.id,'once')}</div>
       <div><div class="text-xs text-slate-400 mb-1">${t('sonrasi')} (${liste(k,'sonra').length})</div>${picker(k.id,'sonra')}</div>
     </div>
@@ -105,18 +106,18 @@ function ciz(){
 async function yukleHepsi(files,kod,tip){ const u=[]; for(const f of files) u.push(await fotoYukle(f,kod,tip)); return u; }
 
 $('yeniForm').onsubmit = async e=>{
-  e.preventDefault(); const btn=$('n_btn'); btn.disabled=true;
+  e.preventDefault(); const btn=$('n_btn'); btn.disabled=true; const on = Math.round((+$('n_on').value||0)*100)/100;
   try{
     let kod, hata, satir;
     for(let i=0;i<8;i++){
       kod = kodUret5();
-      ({data:satir,error:hata} = await sb.from('servis_kayitlari').insert({takip_kodu:kod,musteri_adi:$('n_ad').value.trim(),musteri_tel:$('n_tel').value.trim(),cihaz_modeli:$('n_model').value.trim(),ariza_aciklamasi:$('n_ariza').value.trim(),ariza_kodlari:secili($('n_az')),ucret:+$('n_ucret').value||0}).select().single());
+      ({data:satir,error:hata} = await sb.from('servis_kayitlari').insert({takip_kodu:kod,musteri_adi:$('n_ad').value.trim(),musteri_tel:$('n_tel').value.trim(),cihaz_modeli:$('n_model').value.trim(),ariza_aciklamasi:$('n_ariza').value.trim(),ariza_kodlari:secili($('n_az')),ucret:+$('n_ucret').value||0,odemeler:on>0?[{t:on,d:new Date().toISOString()}]:[]}).select().single());
       if(!hata || hata.code!=='23505') break;
     }
     if(hata) throw hata;
     const fl = bek['yeni_once']||[];
     if(fl.length){ const u = await yukleHepsi(fl,kod,'once'); const {error} = await sb.from('servis_kayitlari').update({fotolar_once:u,onceki_foto_url:u[0]}).eq('id',satir.id); if(error) throw error; }
-    delete bek['yeni_once']; e.target.reset(); $('n_az').innerHTML = arizaChips([]); $('n_pk').innerHTML = picker('yeni','once'); await yukle();
+    delete bek['yeni_once']; e.target.reset(); $('n_az').innerHTML = arizaChips([]); $('n_pk').innerHTML = picker('yeni','once'); await yukle(); toast(t('yeniOk'), kayitlar.find(x=>x.id===satir.id)||satir, 'yeni');
   }catch(err){ alert(t('hata')+err.message); }
   btn.disabled=false;
 };
@@ -134,17 +135,23 @@ $('liste').onclick = async e=>{
         if(fl.length){ const yeni = [...liste(k,x), ...await yukleHepsi(fl,k.takip_kodu,x)];
           upd[x==='once'?'fotolar_once':'fotolar_sonra']=yeni; upd[x==='once'?'onceki_foto_url':'sonraki_foto_url']=yeni[0]; delete bek[key]; } }
       const {error} = await sb.from('servis_kayitlari').update(upd).eq('id',k.id);
-      if(error) throw error; await yukle();
+      if(error) throw error; await yukle(); if(k.durum!==durum){ const nk = kayitlar.find(x=>x.id===k.id); if(nk) toast(t('durumOk'), nk, 'durum'); }
     }catch(err){ alert(t('hata')+err.message); b.disabled=false; }
   }
-  if(b.classList.contains('b-wa')||b.classList.contains('b-hat')){
-    const ar = L==='ar', hat = b.classList.contains('b-hat'), link = takipLinki(k.takip_kodu)+'&k='+(k.erisim_anahtari||'')+'&dil='+L, di = DURUMLAR.indexOf(k.durum), saat = AYAR.saat;
-    const m = ar
-      ? (hat ? `مرحباً ${k.musteri_adi}،\n\nجهازك *${k.cihaz_modeli}* جاهز وبانتظار استلامك.\nالتكلفة: ${para(k.ucret)}\n${saat?'ساعات العمل: '+saat+'\n':''}\nالتفاصيل: ${link}\n\n${AYAR.servis_adi}`
-             : `مرحباً ${k.musteri_adi}،\n\nحالة جهازك *${k.cihaz_modeli}*: *${D_AR[di]}*\nالتكلفة: ${para(k.ucret)}\n\nتابع جهازك لحظة بلحظة:\n${link}\n\n${AYAR.servis_adi}`)
-      : (hat ? `Merhaba ${k.musteri_adi},\n\n*${k.cihaz_modeli}* cihazınız hazır ve teslim almanızı bekliyor.\nÜcret: ${tl(k.ucret)}\n${saat?'Çalışma saatlerimiz: '+saat+'\n':''}\nDetay: ${link}\n\n${AYAR.servis_adi}`
-             : `Merhaba ${k.musteri_adi},\n\n*${k.cihaz_modeli}* cihazınızın durumu: *${k.durum}*\nÜcret: ${tl(k.ucret)}\n\nCihazınızı anlık takip edin:\n${link}\n\n${AYAR.servis_adi}`);
-    window.open(`https://wa.me/${telNo(k.musteri_tel)}?text=${encodeURIComponent(m)}`,'_blank');
+  if(b.classList.contains('b-wa')) waAc(k,'durum');
+  if(b.classList.contains('b-hat')) waAc(k,'hat');
+  if(b.classList.contains('b-ode')||b.classList.contains('b-tamam')||b.classList.contains('b-odesil')){
+    b.disabled=true;
+    try{
+      const ucret = +kart.querySelector('.f-ucret').value||0, lst = [...(k.odemeler||[])], sil = b.classList.contains('b-odesil');
+      if(sil) lst.pop();
+      else{ const tut = b.classList.contains('b-tamam') ? ucret-odenen({odemeler:lst}) : +kart.querySelector('.f-odeme').value;
+        if(!(tut>0)){ b.disabled=false; return; } lst.push({t:Math.round(tut*100)/100, d:new Date().toISOString()}); }
+      const {error} = await sb.from('servis_kayitlari').update({odemeler:lst, ucret}).eq('id',k.id);
+      if(error) throw error; await yukle();
+      if(!sil){ const nk = kayitlar.find(x=>x.id===k.id); if(nk) toast(t('odemeOk'), nk, 'odeme'); }
+    }catch(err){ alert(t('hata')+err.message); b.disabled=false; }
+    return;
   }
   if(b.classList.contains('b-gorsel')) sosyalGorsel(k);
   if(b.classList.contains('b-sil') && confirm(t('silOnay'))){
@@ -176,8 +183,8 @@ function yedekKontrol(){ let s=0; try{ s = +localStorage.getItem('sonYedek')||0;
 function indir(ad,tur,icerik){ const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([icerik],{type:tur})); a.download=ad; a.click(); try{ localStorage.setItem('sonYedek',Date.now()); }catch(e){} yedekKontrol(); }
 const bugun = () => new Date().toISOString().slice(0,10);
 $('y_json').onclick = ()=> indir(`yedek-${bugun()}.json`,'application/json',JSON.stringify([...kayitlar,...silinenler],null,1));
-$('y_csv').onclick = ()=>{ const alan=['takip_kodu','olusturma_tarihi','musteri_adi','musteri_tel','cihaz_modeli','ariza_kodlari','ariza_aciklamasi','yapilan_islem','durum','ucret']; const q=v=>`"${String(Array.isArray(v)?v.join(' | '):(v??'')).replace(/"/g,'""')}"`;
-  indir(`kayitlar-${bugun()}.csv`,'text/csv;charset=utf-8','\ufeff'+[alan.join(';'),...kayitlar.map(k=>alan.map(a=>q(k[a])).join(';'))].join('\r\n')); };
+$('y_csv').onclick = ()=>{ const alan=['takip_kodu','olusturma_tarihi','musteri_adi','musteri_tel','cihaz_modeli','ariza_kodlari','ariza_aciklamasi','yapilan_islem','durum','ucret','odenen','kalan']; const q=v=>`"${String(Array.isArray(v)?v.join(' | '):(v??'')).replace(/"/g,'""')}"`;
+  indir(`kayitlar-${bugun()}.csv`,'text/csv;charset=utf-8','\ufeff'+[alan.join(';'),...kayitlar.map(k=>({...k,odenen:odenen(k),kalan:kalanDeger(k)})).map(k=>alan.map(a=>q(k[a])).join(';'))].join('\r\n')); };
 $('y_geri').onclick = ()=> $('y_dosya').click();
 $('y_dosya').onchange = async e=>{ const f=e.target.files[0]; e.target.value=''; if(!f) return;
   try{ const arr = JSON.parse(await f.text()); if(!Array.isArray(arr)) throw new Error('JSON'); if(!confirm(t('yedekOnay'))) return;
@@ -194,4 +201,53 @@ $('otoDet').addEventListener('toggle',()=>{ if($('otoDet').open) otoYukle(); });
 $('otoListe').onclick = async e=>{ const b=e.target.closest('.oto-geri'); if(!b || !confirm(t('otoOnay'))) return;
   const {data,error} = await sb.rpc('yedekten_geri_yukle',{tarih:b.dataset.t}); if(error) return alert(t('hata')+error.message);
   alert(t('otoOk')(data)); yukle(); };
+
+// ---------- v10: ödeme yardımcıları, WhatsApp bildirimi, canlı yenileme ----------
+const odenen = k => (k.odemeler||[]).reduce((a,x)=>a+(+x.t||0),0);
+const kalanDeger = k => Math.max(0,(+k.ucret||0)-odenen(k));
+const tarihStr = d => new Date(d).toLocaleDateString(L==='ar'?'ar-u-nu-latn':'tr-TR');
+const odemeBlok = k => { const od=odenen(k), kal=kalanDeger(k), son=(k.odemeler||[]).slice(-4).reverse();
+  return `<div class="sm:col-span-2 odeme"><div class="flex flex-wrap items-center justify-between gap-2 text-sm"><span class="flex items-center gap-2 text-slate-300">${ic('wallet')} ${t('odeme')}</span><span dir="ltr"><span class="text-emerald-300">${para(od)}</span> / ${para(k.ucret)}</span></div>
+  <div class="mt-1 text-sm ${kal>0?'text-amber-300':'text-emerald-300'}">${kal>0?t('kalan')+': '+para(kal):t('odendi')}</div>
+  ${son.map(o=>`<div class="flex justify-between text-xs text-slate-400 mt-1"><span dir="ltr">${tarihStr(o.d)}</span><span dir="ltr">${para(o.t)}</span></div>`).join('')}
+  <div class="flex flex-wrap gap-2 mt-3"><input type="number" step="0.01" min="0" class="inp f-odeme" style="flex:1;min-width:7rem" placeholder="${t('tutar')}"><button type="button" class="btn grad-g b-ode">${ic('wallet')} ${t('odemeEkle')}</button>${kal>0?`<button type="button" class="btn ghost b-tamam">${t('kalaniAl')}</button>`:''}${(k.odemeler||[]).length?`<button type="button" class="btn ghost b-odesil">${ic('trash')} ${t('sonOdemeSil')}</button>`:''}</div></div>`; };
+
+function waMesaj(k,tur){
+  const ar=L==='ar', anah=k.erisim_anahtari||'', link=takipLinki(k.takip_kodu)+'&k='+encodeURIComponent(anah)+'&dil='+L, di=DURUMLAR.indexOf(k.durum), saat=AYAR.saat, od=odenen(k), kal=kalanDeger(k), ad=k.musteri_adi, md=k.cihaz_modeli, sv=AYAR.servis_adi;
+  if(ar){
+    const kodS=`رمز التتبع: ${k.takip_kodu}\nكلمة السر: ${anah}`, para2=(od>0?`المدفوع: ${para(od)}\nالمتبقي: ${para(kal)}\n`:'');
+    if(tur==='yeni')  return `مرحباً ${ad}،\n\nتم استلام جهازك *${md}*.\n\n${kodS}\n\nتابع جهازك لحظة بلحظة:\n${link}\n\n${sv}`;
+    if(tur==='hat')   return `مرحباً ${ad}،\n\nجهازك *${md}* جاهز وبانتظار استلامك.\nالتكلفة: ${para(k.ucret)}\n${para2}${saat?'ساعات العمل: '+saat+'\n':''}\nالتفاصيل: ${link}\n\n${sv}`;
+    if(tur==='odeme') return `مرحباً ${ad}،\n\nتم استلام دفعتك، شكراً لك.\nالجهاز: *${md}*\nإجمالي المدفوع: ${para(od)}\n${kal>0?'المتبقي: '+para(kal):'تم السداد بالكامل ✓'}\n\n${sv}`;
+    return `مرحباً ${ad}،\n\nحالة جهازك *${md}*: *${D_AR[di]}*\nالتكلفة: ${para(k.ucret)}\n${para2}\nتابع جهازك لحظة بلحظة:\n${link}\n\n${sv}`;
+  }
+  const kodS=`Takip kodu: ${k.takip_kodu}\nŞifre: ${anah}`, para2=(od>0?`Ödenen: ${tl(od)}\nKalan: ${tl(kal)}\n`:'');
+  if(tur==='yeni')  return `Merhaba ${ad},\n\n*${md}* cihazınızı teslim aldık.\n\n${kodS}\n\nCihazınızı anlık takip edin:\n${link}\n\n${sv}`;
+  if(tur==='hat')   return `Merhaba ${ad},\n\n*${md}* cihazınız hazır ve teslim almanızı bekliyor.\nÜcret: ${tl(k.ucret)}\n${para2}${saat?'Çalışma saatlerimiz: '+saat+'\n':''}\nDetay: ${link}\n\n${sv}`;
+  if(tur==='odeme') return `Merhaba ${ad},\n\nÖdemenizi aldık, teşekkürler.\nCihaz: *${md}*\nToplam ödenen: ${tl(od)}\n${kal>0?'Kalan: '+tl(kal):'Ödemeniz tamamlandı ✓'}\n\n${sv}`;
+  return `Merhaba ${ad},\n\n*${md}* cihazınızın durumu: *${k.durum}*\nÜcret: ${tl(k.ucret)}\n${para2}\nCihazınızı anlık takip edin:\n${link}\n\n${sv}`;
+}
+const waAc = (k,tur) => window.open(`https://wa.me/${telNo(k.musteri_tel)}?text=${encodeURIComponent(waMesaj(k,tur))}`,'_blank');
+let toastZ;
+function toast(metin,k,tur){
+  let el=$('toast'); if(!el){ el=document.createElement('div'); el.id='toast'; document.body.appendChild(el); }
+  el.innerHTML=`<span class="flex-1">${esc(metin)}</span><button class="btn grad-g t-wa">${ic('send')} ${t('wa')}</button><button class="btn ghost t-x">✕</button>`; el.className='show';
+  el.querySelector('.t-wa').onclick=()=>{ waAc(k,tur); el.className=''; }; el.querySelector('.t-x').onclick=()=>{ el.className=''; };
+  clearTimeout(toastZ); toastZ=setTimeout(()=>{ el.className=''; },30000);
+}
+
+// Canlı yenileme: başka cihazdan yapılan değişiklikler panele kendiliğinden gelir
+let rtKanal=null, rtZ;
+function rtYenile(){
+  if($('panel').classList.contains('hidden')) return;
+  const a=document.activeElement, yaziyor = a && $('liste').contains(a) && a.matches('input,textarea,select'), bekFoto = Object.values(bek).some(x=>x.length);
+  if(yaziyor||bekFoto){ clearTimeout(rtZ); rtZ=setTimeout(rtYenile,5000); return; }
+  yukle();
+}
+function realtimeBaslat(){
+  if(rtKanal) return;
+  rtKanal = sb.channel('kayitlar-canli').on('postgres_changes',{event:'*',schema:'public',table:'servis_kayitlari'},()=>{ clearTimeout(rtZ); rtZ=setTimeout(rtYenile,1000); }).subscribe();
+}
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) rtYenile(); });
+
 uygula(); oturumKontrol();
