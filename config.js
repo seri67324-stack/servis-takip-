@@ -6,6 +6,10 @@ const SITE_ADRESI = ''; // Boşsa otomatik algılanır. Örn: https://servisim.v
 // =============================
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 const DURUMLAR = ['Kabul Edildi','İnceleniyor','Parça Bekleniyor','Onarımda','Tamamlandı / Hazır','Teslim Edildi'];
+// Para birimleri: TRY (₺), USD ($), SYP (Suriye lirası)
+const PB = ['TRY','USD','SYP'];
+const PARALAR = {TRY:{s:'₺',sa:'₺',d:2}, USD:{s:'$',sa:'$',d:2}, SYP:{s:'SYP',sa:'ل.س',d:0}};
+const paraYaz = (n,c,ar) => { const p = PARALAR[c]||PARALAR.TRY, v = Number(n||0).toLocaleString(c==='USD'||ar?'en-US':'tr-TR',{minimumFractionDigits:p.d,maximumFractionDigits:p.d}); return c==='USD' ? '$'+v : v+' '+(ar?p.sa:p.s); };
 const tl = n => new Intl.NumberFormat('tr-TR',{style:'currency',currency:'TRY'}).format(n||0);
 const esc = s => String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function takipLinki(kod){

@@ -12,7 +12,7 @@ AR.ph2='كلمة سر التتبع (مذكورة في الرسالة)'; AR.anaht
 const TT = {tr:TR, ar:AR};
 let L = 'tr'; try{ const sd = localStorage.getItem('dil'); L = sd ? (sd==='ar'?'ar':'tr') : ((navigator.language||'').toLowerCase().startsWith('ar')?'ar':'tr'); const pd = new URLSearchParams(location.search).get('dil'); if(pd==='ar'||pd==='tr'){ L=pd; localStorage.setItem('dil',pd); } }catch(e){}
 const t = k => TT[L][k];
-const para = n => L==='ar' ? Number(n||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})+' ₺' : tl(n);
+let pbk = 'TRY'; const para = n => paraYaz(n, pbk, L==='ar');
 let galeri = [], gi = 0, son = null, sonJs = '', aktif = '', aktifAnahtar = '', hataK = '';
 $('logo').innerHTML = ic('wrench','text-white');
 
@@ -62,7 +62,7 @@ function goster(k){
   const fotolar = grup(k.fotolar_once,t('before')) + grup(k.fotolar_sonra,t('after'));
   const satir = (a,v)=>`<div><div class="text-xs uppercase tracking-wide text-slate-500">${a}</div><div class="mt-0.5">${v}</div></div>`;
   const tarih = new Date(k.olusturma_tarihi).toLocaleDateString(t('loc'));
-  const od = +k.odenen||0, kalan = Math.max(0,(+k.ucret||0)-od);
+  pbk = k.para_birimi||'TRY'; const od = +k.odenen||0, kalan = Math.max(0,(+k.ucret||0)-od);
   const odemeHtml = od>0 ? `<div class="flex justify-between text-sm"><span class="text-slate-400">${t('paid')}</span><span dir="ltr" class="text-emerald-300">${para(od)}</span></div><div class="flex justify-between text-sm"><span class="text-slate-400">${t('rest')}</span>${kalan>0?`<span dir="ltr" class="font-bold">${para(kalan)}</span>`:`<span class="text-emerald-300 font-semibold">${t('allPaid')}</span>`}</div>` : '';
   $('sonuc').innerHTML = `
   ${hazir?`<div class="glass p-4 flex items-center gap-3 pulse" style="border-color:#34d399"><span class="ibox w-11 h-11 text-xl" style="background:#34d39922;color:#34d399">${ic('check')}</span><div><div class="font-bold text-emerald-300">${t('hazirT')}</div><div class="text-sm text-slate-300">${t('hazirD')}</div></div></div>`:''}

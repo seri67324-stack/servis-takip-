@@ -52,3 +52,10 @@ Object.assign(ADM.tr,{ciro:'Bu Ay Tahsilat',aylik:'Aylık Tahsilat',alacak:'Kala
 Object.assign(ADM.ar,{ciro:'تحصيل هذا الشهر',aylik:'التحصيل الشهري',alacak:'المبالغ المتبقية',buAyKayit:'سجلات هذا الشهر',onOdeme:'دفعة مقدمة (₺) - إن وجدت',
  odeme:'الدفع',kalan:'المتبقي',odendi:'تم السداد بالكامل ✓',tutar:'المبلغ (₺)',odemeEkle:'تسجيل دفعة',kalaniAl:'تحصيل المتبقي',sonOdemeSil:'حذف آخر دفعة',
  odemeOk:'تم تسجيل الدفعة.',durumOk:'تم تحديث السجل. هل تريد إبلاغ العميل؟',yeniOk:'تم إنشاء السجل. أرسل رابط التتبع للعميل.'});
+
+// ---- v11: sade panel, çoklu para birimi ----
+Object.assign(ADM.tr,{ucret:'Ücret',onOdeme:'Ön ödeme (varsa)',tutar:'Tutar',aktif:'Aktif Cihaz',bekleyen:'Teslim Bekleyen',ciro:'Bu Ay Tahsilat',alacak:'Kalan Alacak',
+ yeniBtn:'Yeni Cihaz Kaydı',ist:'İstatistik ve grafikler',ayarlar:'Ayarlar ve Yedek',foto:'Fotoğraflar',arizaT:'Arıza türü',pbKilit:'Ödeme alındığı için para birimi değiştirilemez',sUcretK:'Kalan alacak (çok → az)'});
+Object.assign(ADM.ar,{ucret:'التكلفة',onOdeme:'دفعة مقدمة (إن وجدت)',tutar:'المبلغ',aktif:'أجهزة قيد العمل',bekleyen:'بانتظار التسليم',ciro:'تحصيل هذا الشهر',alacak:'المبالغ المتبقية',
+ yeniBtn:'تسجيل جهاز جديد',ist:'الإحصائيات والرسوم',ayarlar:'الإعدادات والنسخ الاحتياطي',foto:'الصور',arizaT:'نوع العطل',pbKilit:'لا يمكن تغيير العملة بعد استلام دفعة',sUcretK:'المتبقي (الأعلى أولاً)'});
+const PB_AD = {TRY:'TL (₺)', USD:'USD ($)', SYP:'SYP (ل.س)'};

@@ -17,6 +17,7 @@ create table if not exists public.servis_kayitlari (
   yapilan_islem text,
   durum text not null default 'Kabul Edildi' check (durum in ('Kabul Edildi','İnceleniyor','Parça Bekleniyor','Onarımda','Tamamlandı / Hazır','Teslim Edildi')),
   ucret numeric default 0,
+  para_birimi text not null default 'TRY' check (para_birimi in ('TRY','USD','SYP')),
   odemeler jsonb not null default '[]'::jsonb,
   onceki_foto_url text,
   sonraki_foto_url text,
@@ -89,16 +90,16 @@ begin
   select y.veri into v from public.yedekler y where y.sahip_id = auth.uid() and y.tarih = yedekten_geri_yukle.tarih;
   if v is null then return 0; end if;
   insert into public.servis_kayitlari (id, sahip_id, takip_kodu, erisim_anahtari, musteri_adi, musteri_tel, cihaz_modeli, ariza_aciklamasi,
-      ariza_kodlari, yapilan_islem, durum, ucret, odemeler, onceki_foto_url, sonraki_foto_url, fotolar_once, fotolar_sonra,
+      ariza_kodlari, yapilan_islem, durum, ucret, para_birimi, odemeler, onceki_foto_url, sonraki_foto_url, fotolar_once, fotolar_sonra,
       olusturma_tarihi, hazir_tarihi, silindi, silinme_tarihi)
     select r.id, auth.uid(), r.takip_kodu, r.erisim_anahtari, r.musteri_adi, r.musteri_tel, r.cihaz_modeli, r.ariza_aciklamasi,
-      r.ariza_kodlari, r.yapilan_islem, r.durum, r.ucret, r.odemeler, r.onceki_foto_url, r.sonraki_foto_url, r.fotolar_once, r.fotolar_sonra,
+      r.ariza_kodlari, r.yapilan_islem, r.durum, r.ucret, coalesce(r.para_birimi,'TRY'), r.odemeler, r.onceki_foto_url, r.sonraki_foto_url, r.fotolar_once, r.fotolar_sonra,
       r.olusturma_tarihi, r.hazir_tarihi, r.silindi, r.silinme_tarihi
     from jsonb_populate_recordset(null::public.servis_kayitlari, v) r
   on conflict (id) do update set
       takip_kodu = excluded.takip_kodu, erisim_anahtari = excluded.erisim_anahtari, musteri_adi = excluded.musteri_adi,
       musteri_tel = excluded.musteri_tel, cihaz_modeli = excluded.cihaz_modeli, ariza_aciklamasi = excluded.ariza_aciklamasi,
-      ariza_kodlari = excluded.ariza_kodlari, yapilan_islem = excluded.yapilan_islem, durum = excluded.durum, ucret = excluded.ucret,
+      ariza_kodlari = excluded.ariza_kodlari, yapilan_islem = excluded.yapilan_islem, durum = excluded.durum, ucret = excluded.ucret, para_birimi = excluded.para_birimi,
       odemeler = excluded.odemeler, onceki_foto_url = excluded.onceki_foto_url, sonraki_foto_url = excluded.sonraki_foto_url,
       fotolar_once = excluded.fotolar_once, fotolar_sonra = excluded.fotolar_sonra, olusturma_tarihi = excluded.olusturma_tarihi,
       hazir_tarihi = excluded.hazir_tarihi, silindi = excluded.silindi, silinme_tarihi = excluded.silinme_tarihi;
@@ -122,7 +123,7 @@ drop function if exists public.takip_sorgula(text, text);
 create function public.takip_sorgula(kod text, anahtar text)
 returns table (takip_kodu text, musteri_adi text, cihaz_modeli text, ariza_aciklamasi text, ariza_kodlari text[],
   yapilan_islem text, durum text, ucret numeric, odenen numeric, fotolar_once text[], fotolar_sonra text[],
-  olusturma_tarihi timestamptz, servis_adi text, servis_tel text, servis_adres text, servis_saat text, servis_harita text)
+  olusturma_tarihi timestamptz, servis_adi text, servis_tel text, servis_adres text, servis_saat text, servis_harita text, para_birimi text)
 language plpgsql security definer set search_path = public as $$
 declare v_kod text; v_key text; v_id uuid; n integer; g integer;
 begin
@@ -144,7 +145,7 @@ begin
   return query
     select s.takip_kodu, s.musteri_adi, s.cihaz_modeli, s.ariza_aciklamasi, s.ariza_kodlari, s.yapilan_islem, s.durum, s.ucret,
       coalesce((select sum((e->>'t')::numeric) from jsonb_array_elements(s.odemeler) e), 0),
-      s.fotolar_once, s.fotolar_sonra, s.olusturma_tarihi, a.servis_adi, a.tel, a.adres, a.saat, a.harita
+      s.fotolar_once, s.fotolar_sonra, s.olusturma_tarihi, a.servis_adi, a.tel, a.adres, a.saat, a.harita, s.para_birimi
     from public.servis_kayitlari s left join public.ayarlar a on a.sahip_id = s.sahip_id
     where s.id = v_id;
 end $$;

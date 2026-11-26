@@ -20,39 +20,54 @@
 <div id="panel" class="hidden max-w-4xl mx-auto p-4 pb-12">
   <div class="flex justify-between items-center mb-4 gap-2"><div class="flex items-center gap-3"><div class="ibox grad w-10 h-10 text-lg" id="plogo"></div><h1 class="text-xl font-extrabold gt" data-i="panel"></h1></div>
   <div class="flex gap-2"><button data-dl="tr" class="chip">TR</button><button data-dl="ar" class="chip">عربي</button><button id="cikis" class="chip" data-i="cikis"></button></div></div>
-  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-3 gap-3 mb-4"></div>
-  <div class="grid md:grid-cols-2 gap-3 mb-4">
-    <div class="glass p-5"><div class="font-semibold mb-4" data-i="durumDag"></div><div id="donut"></div></div>
-    <div class="glass p-5"><div class="font-semibold mb-1" data-i="aylik"></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
-  </div>
-  <details class="glass p-5 mb-4">
-    <summary class="font-semibold cursor-pointer"><span data-i="sb"></span> <span class="text-xs text-slate-400 font-normal" data-i="sbN"></span></summary>
-    <form id="ayarForm" class="mt-4 grid gap-3 sm:grid-cols-2">
-      <input id="s_adi" data-p="sAdi" class="inp"><input id="s_tel" type="tel" dir="ltr" data-p="sTel" class="inp">
-      <input id="s_adres" data-p="sAdres" class="inp sm:col-span-2"><input id="s_saat" data-p="sSaat" class="inp sm:col-span-2">
-      <input id="s_harita" dir="ltr" data-p="sHarita" class="inp sm:col-span-2">
-      <button type="button" id="s_konum" class="btn ghost sm:col-span-2"></button>
-      <button id="s_btn" class="btn grad-g sm:col-span-2 py-3"></button>
-    </form>
-  </details>
-  <details class="glass p-5 mb-4" open>
-    <summary class="font-semibold cursor-pointer" data-i="yeni"></summary>
+  <div id="yedekUy" class="hidden mb-3 text-sm rounded-xl px-4 py-3 bg-amber-500/15 text-amber-300"></div>
+
+  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"></div>
+
+  <details class="glass p-4 mb-4" id="yeniDet">
+    <summary class="font-semibold flex items-center gap-2"><span class="ibox grad i8">+</span><span data-i="yeniBtn"></span></summary>
     <form id="yeniForm" class="mt-4 grid gap-3 sm:grid-cols-2">
       <input id="n_ad" data-p="ad" class="inp" required><input id="n_tel" type="tel" dir="ltr" data-p="tel" class="inp" required>
-      <input id="n_model" data-p="model" class="inp" required><input id="n_ucret" type="number" step="0.01" data-p="ucret" class="inp"><input id="n_on" type="number" step="0.01" min="0" data-p="onOdeme" class="inp sm:col-span-2">
+      <input id="n_model" data-p="model" class="inp sm:col-span-2" required>
+      <input id="n_ucret" type="number" step="0.01" min="0" data-p="ucret" class="inp"><select id="n_pb" class="inp"></select>
+      <input id="n_on" type="number" step="0.01" min="0" data-p="onOdeme" class="inp sm:col-span-2">
       <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="arizaSec"></div><div id="n_az"></div></div>
       <textarea id="n_ariza" data-p="not" class="inp sm:col-span-2" rows="2"></textarea>
       <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="onceF"></div><div id="n_pk"></div></div>
       <button id="n_btn" class="btn grad-g sm:col-span-2 py-3"></button>
     </form>
   </details>
-  <div id="yedekUy" class="hidden mb-3 text-sm rounded-xl px-4 py-3 bg-amber-500/15 text-amber-300"></div>
-  <div class="glass p-4 mb-4 flex flex-wrap gap-2 items-center"><span class="font-semibold flex-1" data-i="yedek"></span><button id="y_json" class="btn ghost" data-i="yJson"></button><button id="y_csv" class="btn ghost" data-i="yCsv"></button><button id="y_geri" class="btn ghost" data-i="yGeri"></button><input type="file" id="y_dosya" accept=".json,application/json" class="hidden"></div>
-  <details id="otoDet" class="glass p-4 mb-4"><summary class="font-semibold cursor-pointer" data-i="otoYedek"></summary><div id="otoListe" class="mt-3"></div></details>
-  <input id="ara" data-p="ara" class="inp mb-3">
-  <div class="flex gap-2 overflow-x-auto pb-2 mb-2" id="chips"></div>
-  <select id="sira" class="inp mb-3"></select>
-  <div id="liste" class="space-y-3"></div>
+
+  <div class="bar">
+    <div class="grid grid-cols-2 gap-2 mb-2"><input id="ara" data-p="ara" class="inp"><select id="sira" class="inp"></select></div>
+    <div class="flex gap-2 overflow-x-auto pb-1" id="chips"></div>
+  </div>
+  <div id="liste" class="space-y-3 mb-6"></div>
+
+  <details class="glass p-4 mb-3">
+    <summary class="font-semibold" data-i="ist"></summary>
+    <div class="grid md:grid-cols-2 gap-3 mt-4">
+      <div><div class="font-semibold mb-3 text-sm" data-i="durumDag"></div><div id="donut"></div></div>
+      <div><div class="flex items-center justify-between gap-2 mb-1"><div class="font-semibold text-sm" data-i="aylik"></div><div id="pbSec" class="flex gap-1"></div></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
+    </div>
+  </details>
+
+  <details class="glass p-4 mb-3">
+    <summary class="font-semibold" data-i="ayarlar"></summary>
+    <div class="mt-4 space-y-4">
+      <details class="sub"><summary><span data-i="sb"></span> <span class="text-xs text-slate-400" data-i="sbN"></span></summary>
+        <form id="ayarForm" class="mt-3 grid gap-3 sm:grid-cols-2">
+          <input id="s_adi" data-p="sAdi" class="inp"><input id="s_tel" type="tel" dir="ltr" data-p="sTel" class="inp">
+          <input id="s_adres" data-p="sAdres" class="inp sm:col-span-2"><input id="s_saat" data-p="sSaat" class="inp sm:col-span-2">
+          <input id="s_harita" dir="ltr" data-p="sHarita" class="inp sm:col-span-2">
+          <button type="button" id="s_konum" class="btn ghost sm:col-span-2"></button>
+          <button id="s_btn" class="btn grad-g sm:col-span-2 py-3"></button>
+        </form>
+      </details>
+      <div class="sub"><div class="flex flex-wrap gap-2 items-center"><span class="font-semibold flex-1 text-sm" data-i="yedek"></span><button id="y_json" class="btn ghost" data-i="yJson"></button><button id="y_csv" class="btn ghost" data-i="yCsv"></button><button id="y_geri" class="btn ghost" data-i="yGeri"></button><input type="file" id="y_dosya" accept=".json,application/json" class="hidden"></div></div>
+      <details id="otoDet" class="sub"><summary data-i="otoYedek"></summary><div id="otoListe" class="mt-3"></div></details>
+    </div>
+  </details>
 </div>
 <script src="config.js"></script><script src="ayarlar.js"></script><script src="diller.js"></script><script src="admin.js"></script>
 </body></html>

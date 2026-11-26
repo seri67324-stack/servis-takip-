@@ -25,3 +25,15 @@ body{background:#060914;background-image:radial-gradient(55rem 38rem at 0% -10%,
 .odeme{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:1rem;padding:.8rem}
 #toast{display:none;position:fixed;left:.75rem;right:.75rem;bottom:calc(.75rem + env(safe-area-inset-bottom,0px));z-index:60;align-items:center;gap:.5rem;background:rgba(15,23,42,.96);border:1px solid rgba(255,255,255,.15);border-radius:1.1rem;padding:.7rem .8rem;box-shadow:0 12px 40px rgba(0,0,0,.6);font-size:.9rem;max-width:32rem;margin:0 auto}
 #toast.show{display:flex}
+
+/* v11: sade panel */
+.kart>summary,details.glass>summary{list-style:none;cursor:pointer}
+.kart>summary::-webkit-details-marker,details.glass>summary::-webkit-details-marker{display:none}
+.kart>summary::after{content:'';width:.55rem;height:.55rem;border-right:2px solid #94a3b8;border-bottom:2px solid #94a3b8;transform:rotate(45deg);margin-inline-start:.25rem;transition:.2s;flex-shrink:0}
+.kart[open]>summary::after{transform:rotate(-135deg)}
+.kbody{margin-top:.9rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.08)}
+.sub{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:1rem;padding:.7rem .85rem}
+.sub>summary{cursor:pointer;font-size:.85rem;color:#cbd5e1}
+.stat{padding:.9rem 1rem}.stat .v{font-size:1.15rem;font-weight:800;line-height:1.35}
+.bar{position:sticky;top:0;z-index:20;padding:.5rem 0;background:linear-gradient(#060914 70%,transparent)}
+.i8{width:2rem;height:2rem}
