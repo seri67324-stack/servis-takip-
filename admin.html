@@ -8,7 +8,15 @@
 </head>
 <body class="min-h-screen">
 <div id="giris" class="max-w-sm mx-auto p-6 mt-12 up">
-  <div class="flex justify-end gap-2 mb-6"><button data-dl="tr" class="chip">Türkçe</button><button data-dl="ar" class="chip">العربية</button></div>
+  <div class="flex justify-between items-center gap-2 mb-6">
+    <select data-tema-sec class="chip cursor-pointer" onchange="temaUygula(this.value)">
+      <option value="gece">Gece</option>
+      <option value="okyanus">Okyanus</option>
+      <option value="zumrut">Zümrüt</option>
+      <option value="aydinlik">Aydınlık</option>
+    </select>
+    <div class="flex gap-2"><button data-dl="tr" class="chip">Türkçe</button><button data-dl="ar" class="chip">العربية</button></div>
+  </div>
   <div class="ibox grad w-16 h-16 mx-auto text-3xl" id="glogo"></div><h1 class="text-2xl font-extrabold text-center my-5 gt" data-i="giris"></h1>
   <form id="girisForm" class="glass p-5 space-y-3">
     <input id="email" type="email" dir="ltr" data-p="email" class="inp" required>
@@ -17,19 +25,52 @@
     <p id="girisHata" class="text-rose-400 text-sm text-center"></p>
   </form>
 </div>
+
 <div id="panel" class="hidden max-w-4xl mx-auto p-4 pb-12">
-  <div class="flex justify-between items-center mb-4 gap-2"><div class="flex items-center gap-3"><div class="ibox grad w-10 h-10 text-lg" id="plogo"></div><h1 class="text-xl font-extrabold gt" data-i="panel"></h1></div>
-  <div class="flex gap-2"><button data-dl="tr" class="chip">TR</button><button data-dl="ar" class="chip">عربي</button><button id="cikis" class="chip" data-i="cikis"></button></div></div>
+  <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+    <div class="flex items-center gap-2.5">
+      <div class="ibox grad w-10 h-10 text-lg" id="plogo"></div>
+      <h1 class="text-lg font-extrabold gt" data-i="panel"></h1>
+    </div>
+    <div class="flex gap-1.5 items-center flex-wrap">
+      <select id="temaUst" data-tema-sec class="chip cursor-pointer" onchange="temaUygula(this.value)">
+        <option value="gece">Gece</option>
+        <option value="okyanus">Okyanus</option>
+        <option value="zumrut">Zümrüt</option>
+        <option value="aydinlik">Aydınlık</option>
+      </select>
+      <button data-dl="tr" class="chip">TR</button>
+      <button data-dl="ar" class="chip">عربي</button>
+      <button id="cikis" class="chip" data-i="cikis"></button>
+    </div>
+  </div>
+
   <div id="yedekUy" class="hidden mb-3 text-sm rounded-xl px-4 py-3 bg-amber-500/15 text-amber-300"></div>
 
-  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4"></div>
+  <!-- Kompakt Özet Kartları -->
+  <div id="kartlar" class="grid grid-cols-2 md:grid-cols-4 gap-2.5 mb-3"></div>
 
-  <details class="glass p-4 mb-4" id="yeniDet">
-    <summary class="font-semibold flex items-center gap-2"><span class="ibox grad i8">+</span><span data-i="yeniBtn"></span></summary>
+  <!-- Hazır Bekleyen Cihazlar İçin Otomatik Hatırlatma Sırası (Sadece hazır bekleyen varsa görünür) -->
+  <details class="glass p-3.5 mb-3 hidden" id="hazirSiraBox" style="border-color:rgba(244,63,94,.35)">
+    <summary class="m-menu-ozet font-semibold text-sm text-rose-300">
+      <span class="flex items-center gap-2" id="hazirSiraBaslik"></span>
+      <span class="m-ok">▼</span>
+    </summary>
+    <div id="hazirSiraListe" class="mt-3 space-y-2"></div>
+  </details>
+
+  <!-- Yeni Cihaz Kaydı -->
+  <details class="glass p-3.5 mb-3" id="yeniDet">
+    <summary class="m-menu-ozet font-semibold text-sm">
+      <span class="flex items-center gap-2"><span class="ibox grad i8">+</span><span data-i="yeniBtn"></span></span>
+      <span class="m-ok text-slate-400">▼</span>
+    </summary>
     <form id="yeniForm" class="mt-4 grid gap-3 sm:grid-cols-2">
-      <input id="n_ad" data-p="ad" class="inp" required><input id="n_tel" type="tel" dir="ltr" data-p="tel" class="inp" required>
+      <input id="n_ad" data-p="ad" class="inp" required>
+      <input id="n_tel" type="tel" dir="ltr" data-p="tel" class="inp" required>
       <input id="n_model" data-p="model" class="inp sm:col-span-2" required>
-      <input id="n_ucret" type="number" step="0.01" min="0" data-p="ucret" class="inp"><select id="n_pb" class="inp"></select>
+      <input id="n_ucret" type="number" step="0.01" min="0" data-p="ucret" class="inp">
+      <select id="n_pb" class="inp"></select>
       <input id="n_on" type="number" step="0.01" min="0" data-p="onOdeme" class="inp sm:col-span-2">
       <div class="sm:col-span-2"><div class="text-sm text-slate-400 mb-2" data-i="arizaSec"></div><div id="n_az"></div></div>
       <textarea id="n_ariza" data-p="not" class="inp sm:col-span-2" rows="2"></textarea>
@@ -38,23 +79,73 @@
     </form>
   </details>
 
-  <div class="bar">
-    <div class="grid grid-cols-2 gap-2 mb-2"><input id="ara" data-p="ara" class="inp"><select id="sira" class="inp"></select></div>
-    <div class="flex gap-2 overflow-x-auto pb-1" id="chips"></div>
-  </div>
-  <div id="liste" class="space-y-3 mb-6"></div>
+  <!-- Müşteri & Cihaz Listesi (Açılır/Kapanır Menü - Varsayılan kapalı başlar, tıklayınca aşağı açılır) -->
+  <details class="glass p-3.5 mb-3" id="musteriMenu">
+    <summary class="m-menu-ozet">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <span class="ibox grad i8 shrink-0" id="mIkon"></span>
+        <div class="min-w-0">
+          <div class="font-bold text-sm flex items-center gap-2">
+            <span data-i="musteriListesi"></span>
+            <span id="musteriSayac" class="text-xs px-2 py-0.5 rounded-full bg-indigo-500/25 text-indigo-300 font-mono">0</span>
+          </div>
+          <div class="text-xs text-slate-400 truncate" data-i="musteriAc"></div>
+        </div>
+      </div>
+      <span class="m-ok text-slate-400 text-sm">▼</span>
+    </summary>
 
-  <details class="glass p-4 mb-3">
-    <summary class="font-semibold" data-i="ist"></summary>
-    <div class="grid md:grid-cols-2 gap-3 mt-4">
-      <div><div class="font-semibold mb-3 text-sm" data-i="durumDag"></div><div id="donut"></div></div>
-      <div><div class="flex items-center justify-between gap-2 mb-1"><div class="font-semibold text-sm" data-i="aylik"></div><div id="pbSec" class="flex gap-1"></div></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
+    <div class="mt-3 pt-3 border-t border-white/10">
+      <div class="bar mb-2">
+        <div class="grid grid-cols-2 gap-2 mb-2">
+          <input id="ara" data-p="ara" class="inp">
+          <select id="sira" class="inp"></select>
+        </div>
+        <div class="flex gap-2 overflow-x-auto pb-1" id="chips"></div>
+      </div>
+      <div id="liste" class="space-y-2.5 max-h-[68vh] overflow-y-auto pr-0.5"></div>
     </div>
   </details>
 
-  <details class="glass p-4 mb-3">
-    <summary class="font-semibold" data-i="ayarlar"></summary>
+  <!-- Dönemsel Tahsilat Özeti & İstatistikler -->
+  <details class="glass p-3.5 mb-3" id="istDet">
+    <summary class="m-menu-ozet font-semibold text-sm">
+      <span data-i="ist"></span>
+      <span class="m-ok text-slate-400">▼</span>
+    </summary>
     <div class="mt-4 space-y-4">
+      <div class="flex items-center justify-between flex-wrap gap-2">
+        <span class="text-xs text-slate-400" data-i="odemeDokumu"></span>
+        <div id="pbSec" class="flex gap-1.5"></div>
+      </div>
+      <div id="donemKartlar" class="grid grid-cols-3 gap-2"></div>
+      <div class="grid md:grid-cols-2 gap-3">
+        <div class="sub"><div class="font-semibold mb-3 text-sm" data-i="durumDag"></div><div id="donut"></div></div>
+        <div class="sub"><div class="font-semibold text-sm" data-i="aylik"></div><div class="text-xs text-slate-400 mb-2" data-i="son6"></div><div id="aylik" dir="ltr"></div></div>
+      </div>
+      <div class="sub">
+        <div class="font-semibold text-sm mb-2" data-i="odemeDokumu"></div>
+        <div id="odemeDokumListe" class="space-y-1.5 max-h-60 overflow-y-auto text-xs"></div>
+      </div>
+    </div>
+  </details>
+
+  <!-- Ayarlar, Tema ve Yedek -->
+  <details class="glass p-3.5 mb-3">
+    <summary class="m-menu-ozet font-semibold text-sm">
+      <span data-i="ayarlar"></span>
+      <span class="m-ok text-slate-400">▼</span>
+    </summary>
+    <div class="mt-4 space-y-3">
+      <div class="sub">
+        <div class="font-semibold text-sm mb-2" data-i="temaSec"></div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2" id="temaKartlar">
+          <button type="button" class="chip justify-center py-2" data-tema-sec="gece" onclick="temaUygula('gece')" data-i="temaGece"></button>
+          <button type="button" class="chip justify-center py-2" data-tema-sec="okyanus" onclick="temaUygula('okyanus')" data-i="temaOkyanus"></button>
+          <button type="button" class="chip justify-center py-2" data-tema-sec="zumrut" onclick="temaUygula('zumrut')" data-i="temaZumrut"></button>
+          <button type="button" class="chip justify-center py-2" data-tema-sec="aydinlik" onclick="temaUygula('aydinlik')" data-i="temaAydinlik"></button>
+        </div>
+      </div>
       <details class="sub"><summary><span data-i="sb"></span> <span class="text-xs text-slate-400" data-i="sbN"></span></summary>
         <form id="ayarForm" class="mt-3 grid gap-3 sm:grid-cols-2">
           <input id="s_adi" data-p="sAdi" class="inp"><input id="s_tel" type="tel" dir="ltr" data-p="sTel" class="inp">

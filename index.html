@@ -9,7 +9,18 @@
 </head>
 <body class="min-h-screen">
 <main class="max-w-md mx-auto p-4 pb-10">
-  <div class="flex justify-end gap-2 pt-1"><button data-l="tr" class="chip">Türkçe</button><button data-l="ar" class="chip">العربية</button></div>
+  <div class="flex justify-between items-center gap-2 pt-1">
+    <select data-tema-sec class="chip cursor-pointer" aria-label="Tema" onchange="temaUygula(this.value)">
+      <option value="gece">Gece</option>
+      <option value="okyanus">Okyanus</option>
+      <option value="zumrut">Zümrüt</option>
+      <option value="aydinlik">Aydınlık</option>
+    </select>
+    <div class="flex gap-2">
+      <button data-l="tr" class="chip">Türkçe</button>
+      <button data-l="ar" class="chip">العربية</button>
+    </div>
+  </div>
   <header class="text-center py-6 up"><div id="logo" class="ibox grad w-14 h-14 mx-auto text-2xl"></div><h1 id="baslik" class="text-2xl font-extrabold mt-3 gt">Cihaz Takip</h1><p id="altbaslik" class="text-slate-400 text-sm mt-1"></p></header>
   <form id="sorgu" class="glass p-3 grid gap-2 up">
     <input id="kod" dir="ltr" class="inp uppercase font-mono" autocomplete="off">
